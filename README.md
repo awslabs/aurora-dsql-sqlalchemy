@@ -1,4 +1,4 @@
-# Aurora DSQL dialect for SQLAlchemy
+# Amazon Aurora DSQL dialect for SQLAlchemy
 
 ## Prerequisites
 
