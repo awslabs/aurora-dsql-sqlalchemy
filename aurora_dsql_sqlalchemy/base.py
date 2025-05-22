@@ -247,4 +247,3 @@ class AuroraDSQLDialect(PGDialect):
                 pg_catalog.pg_class.c.relname.in_(bindparam("filter_names"))
             )
         return query
-    

@@ -23,7 +23,3 @@ with engine.connect() as conn:
     result =  conn.execute(text('select * from "information_schema"."tables"'))
     print(result.fetchone())
     conn.commit()
-
-
-
-
