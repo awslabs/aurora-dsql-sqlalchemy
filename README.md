@@ -25,7 +25,6 @@ To install these libraries use the following:
 
 After the aurora dsql dialect installation, you should be able to connect by creating the SQLAlchemy create_engine.
 
-
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
