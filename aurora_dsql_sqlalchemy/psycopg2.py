@@ -1,4 +1,5 @@
 from sqlalchemy.dialects.postgresql.psycopg2 import PGDialect_psycopg2
+
 from .base import AuroraDSQLDialect
 
 

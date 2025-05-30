@@ -47,20 +47,25 @@ jobs:
           role-to-assume: ${{ secrets.PYTHON_IAM_ROLE }}
           aws-region: us-east-1
 
-      - name: Configure and run integration for SQL Alchemy
+      - name: Configure Python
+        run: |
+          python3 -m venv sqlalchemy-integ
+          source sqlalchemy-integ/bin/activate
+          pip install --upgrade pip
+          pip install -e .
+          pip install -e '.[test]'
+          python3 -c "import boto3; print(boto3.__version__)"
+          pip list
+
+      - name: Lint and Check for Formatting
+        run: ruff check
+
+      - name: Run integration tests for SQL Alchemy
         env:
           CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
           REGION: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_REGION }}
           CLUSTER_USER: admin
         run: |
-          python3 -m venv sqlalchemy-integ
-          source sqlalchemy-integ/bin/activate
           wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
-          pip install --upgrade pip
-          pip install -e .
-          pip install -e '.[test]'
-          python3 -c "import boto3; print(boto3.__version__)"
-          pip install pytest-cov
-          pip list
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           pytest -v test/

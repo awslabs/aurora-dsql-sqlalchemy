@@ -1,7 +1,8 @@
-from sqlalchemy.dialects.postgresql.base import PGDialect, PGDDLCompiler
-from sqlalchemy import sql, select, bindparam
-from sqlalchemy.dialects.postgresql import pg_catalog
 from functools import lru_cache
+
+from sqlalchemy import bindparam, select, sql
+from sqlalchemy.dialects.postgresql import pg_catalog
+from sqlalchemy.dialects.postgresql.base import PGDDLCompiler, PGDialect
 
 
 class AuroraDSQLDDLCompiler(PGDDLCompiler):
@@ -63,6 +64,10 @@ class AuroraDSQLDialect(PGDialect):
 
     @lru_cache()
     def _columns_query(self, schema, has_filter_names, scope, kind):
+        """
+        modified from https://github.com/sqlalchemy/sqlalchemy/blob/rel_2_0_41/lib/sqlalchemy/dialects/postgresql/base.py
+        """
+
         # NOTE: the query with the default and identity options scalarx
         # subquery is faster than trying to use outer joins for them
         generated = (
@@ -71,9 +76,11 @@ class AuroraDSQLDialect(PGDialect):
             else sql.null().label("generated")
         )
 
-        # the original code uses sql.func.json_build_object when server_version is greater than 10
+        # the original code uses sql.func.json_build_object when server_version is
+        # greater than version 10
         # json_build_object is not supported by Aurora DSQL
-        # TODO: if json_build_object is supported in the future, the override of the function _columns_query is not needed
+        # TODO: if json_build_object is supported in the future,
+        # restore _columns_query function from original
 
         identity = sql.null().label("identity_options")
 

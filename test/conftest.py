@@ -1,9 +1,10 @@
+import os
+
+import boto3
 from sqlalchemy import event
 from sqlalchemy.dialects import registry
 from sqlalchemy.engine import URL
-import pytest
-import os
-import boto3
+from sqlalchemy.testing import engines
 
 # Register your dialect
 registry.register(
@@ -17,8 +18,6 @@ registry.register(
     "AuroraDSQLDialect_psycopg2",
 )
 
-# Direct patching of testing_engine
-from sqlalchemy.testing import engines
 
 original_testing_engine = engines.testing_engine
 
@@ -71,9 +70,6 @@ def custom_testing_engine(
 
 
 engines.testing_engine = custom_testing_engine
-
-# Register assertion rewriting
-pytest.register_assert_rewrite("sqlalchemy.testing.assertions")
 
 # Import SQLAlchemy testing components
 from sqlalchemy.testing.plugin.pytestplugin import *  # noqa

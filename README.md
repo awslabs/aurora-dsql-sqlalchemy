@@ -9,6 +9,7 @@ Amazon Aurora DSQL dialect for SQLAlchemy enables Python applications to connect
 - psycopg2-binary 2.9.0 or higher
 
 ## Installation
+
 Install the packages directly from the repository:
 
 ```
@@ -23,7 +24,7 @@ After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 
-    url = URL.create(
+url = URL.create(
     "aurora_dsql+psycopg2",
     username=admin,
     host=<CLUSTER_END_POINT>,

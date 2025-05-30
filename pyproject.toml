@@ -12,8 +12,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest", "boto3"]
-dev = ["black"]
+test = ["pytest", "boto3", "pytest-cov", "ruff"]
 
 [project.entry-points."sqlalchemy.dialects"]
 aurora_dsql = "aurora_dsql_sqlalchemy.psycopg2:AuroraDSQLDialect_psycopg2"
@@ -27,20 +26,24 @@ packages = ["aurora_dsql_sqlalchemy"]
 addopts = "-v  -r chars -s" 
 python_files = ["test/*test_*.py"]
 
-[tool.black]
+[tool.ruff]
+target-version = "py39"
 line-length = 88
-target-version = ["py39"]
-include = '\.pyi?$'
-exclude = '''
-/(
-    \.git
-  | \.hg
-  | \.mypy_cache
-  | \.tox
-  | \.venv
-  | _build
-  | buck-out
-  | build
-  | dist
-)/
-'''
+lint.select = ["E", "F", "I"]
+lint.ignore = []
+exclude = [
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".tox",
+    ".venv",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
