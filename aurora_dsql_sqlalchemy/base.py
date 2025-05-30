@@ -3,6 +3,7 @@ from sqlalchemy import sql, select, bindparam
 from sqlalchemy.dialects.postgresql import pg_catalog
 from functools import lru_cache
 
+
 class AuroraDSQLDDLCompiler(PGDDLCompiler):
 
     def visit_create_index(self, create, **kw):
@@ -10,7 +11,7 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
         modified from https://github.com/sqlalchemy/sqlalchemy/blob/rel_2_0_41/lib/sqlalchemy/dialects/postgresql/base.py
         """
         preparer = self.preparer
-        index = create.element      
+        index = create.element
         self._verify_index_table(index)
         text = "CREATE "
         if index.unique:
@@ -18,7 +19,7 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
 
         text += "INDEX "
 
-        if self.dialect._supports_create_index_async: 
+        if self.dialect._supports_create_index_async:
             text += "ASYNC "
 
         if create.if_not_exists:
@@ -39,9 +40,7 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
                 [preparer.quote(c.name) for c in inclusions]
             )
 
-        nulls_not_distinct = index.dialect_options["postgresql"][
-            "nulls_not_distinct"
-        ]
+        nulls_not_distinct = index.dialect_options["postgresql"]["nulls_not_distinct"]
         if nulls_not_distinct is True:
             text += " NULLS NOT DISTINCT"
         elif nulls_not_distinct is False:
@@ -49,12 +48,13 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
 
         return text
 
+
 class AuroraDSQLDialect(PGDialect):
     name = "aurora_dsql"
     default_schema_name = "public"
 
     ddl_compiler = AuroraDSQLDDLCompiler
-    
+
     supports_sequences = False
     supports_alter = False
     supports_native_enum = False
@@ -87,10 +87,8 @@ class AuroraDSQLDialect(PGDialect):
             )
             .select_from(pg_catalog.pg_attrdef)
             .where(
-                pg_catalog.pg_attrdef.c.adrelid
-                == pg_catalog.pg_attribute.c.attrelid,
-                pg_catalog.pg_attrdef.c.adnum
-                == pg_catalog.pg_attribute.c.attnum,
+                pg_catalog.pg_attrdef.c.adrelid == pg_catalog.pg_attribute.c.attrelid,
+                pg_catalog.pg_attrdef.c.adnum == pg_catalog.pg_attribute.c.attnum,
                 pg_catalog.pg_attribute.c.atthasdef,
             )
             .correlate(pg_catalog.pg_attribute)
@@ -119,8 +117,7 @@ class AuroraDSQLDialect(PGDialect):
             .outerjoin(
                 pg_catalog.pg_attribute,
                 sql.and_(
-                    pg_catalog.pg_class.c.oid
-                    == pg_catalog.pg_attribute.c.attrelid,
+                    pg_catalog.pg_class.c.oid == pg_catalog.pg_attribute.c.attrelid,
                     pg_catalog.pg_attribute.c.attnum > 0,
                     ~pg_catalog.pg_attribute.c.attisdropped,
                 ),
@@ -135,9 +132,7 @@ class AuroraDSQLDialect(PGDialect):
                 ),
             )
             .where(self._pg_class_relkind_condition(relkinds))
-            .order_by(
-                pg_catalog.pg_class.c.relname, pg_catalog.pg_attribute.c.attnum
-            )
+            .order_by(pg_catalog.pg_class.c.relname, pg_catalog.pg_attribute.c.attnum)
         )
         query = self._pg_class_filter_scope_schema(query, schema, scope=scope)
         if has_filter_names:
