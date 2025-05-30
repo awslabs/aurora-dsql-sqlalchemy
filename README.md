@@ -1,40 +1,66 @@
 # Amazon Aurora DSQL dialect for SQLAlchemy
 
+Amazon Aurora DSQL dialect for SQLAlchemy enables Python applications to connect to and interact with Aurora DSQL databases using the SQLAlchemy ORM.
+
 ## Prerequisites
 
-The following libraries are required to connect to Aurora DSQL
+- Python 3.9 or higher
+- SQLAlchemy 2.0.0 or higher
+- psycopg2-binary 2.9.0 or higher
 
-- sqlalchemy
-- psycopg2-binary
+## Installation
 
-To install these libraries use the following:
-
-```
-    pip install sqlalchemy
-    pip install pscycopg2-binary
-```
-
-## Install and usage
-
-- Get a copy of the repo
-- run the following inside the root directory of the
+Install the packages directly from the repository:
 
 ```
-    pip install <full_path_to_repo_root>
+pip install -e .
 ```
 
-After the aurora dsql dialect installation, you should be able to connect by creating the SQLAlchemy create_engine. Please refer to the sample.py for a simple connection test.
+## Usage
 
-## File Descriptions
+After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's create_engine:
 
-- `/aurora_dsql_sqlalchemy/__init__.py` - a file that is executed when imported by python. In this file, the dialect is registered into the SQLAlchemy system.
-- `/aurora_dsql_sqlalchemy/base.py` - the base implementation of the dialect for the aurora dsql database
-  - notice there is a `_supports_create_index_async` flag to indicate whether the keyword ASYNC should be added or not inside a CREATE INDEX sql statement.
-- `/aurora_dsql_sqlalchemy/psycopg2.py` - configures which driver SQLAlchemy uses
-- `/sample.py` - a SQLAlchemy quick connect sample using the `aurora_dsql+psycopg2` dialect
-- `/setup.py` - a file that manages the information required by pip install and automatically register the aurora dsql dialect into SQLAlchemy without explicitly importing the dialect itself as defined in `entry_points`.
-  - Note there is a syntax difference between the registration and the usage in SQLAlchemy for e.g.
-    When registering the dialect, the name ` aurora_dsql.psycopg2` is used, but inside SQLAlchemy the corresponding dialect becomes `aurora_dsql+psycopg2`
+```
+from sqlalchemy import create_engine
+from sqlalchemy.engine.url import URL
+
+url = URL.create(
+    "aurora_dsql+psycopg2",
+    username=admin,
+    host=<CLUSTER_END_POINT>,
+    password=<CLUSTER_TOKEN>,
+    database='postgres',
+    query={
+        # (optional) If sslmode is 'verify-full' then use sslrootcert
+        # variable to set the path to server root certificate
+        # If no path is provided, the adapter looks into system certs
+        # NOTE: Do not use it with 'sslmode': 'require'
+        'sslmode': 'verify-full',
+        'sslrootcert': '<ROOT_CERT_PATH>'
+    }
+)
+
+engine = create_engine(url)
+```
+
+The connection string "aurora_dsql+psycopg2" specifies to use the `aurora_dsql` dialect with the driver `psycopg2`
+
+## Integration Tests
+
+The following libraries are required to run the integration tests:
+
+- boto3
+- pytest
+
+To run the test use the following:
+
+```
+pip install -e '.[test]'
+export CLUSTER_ENDPOINT=<YOUR_CLUSTER_HOSTNAME>
+export CLUSTER_USER=admin
+export REGION=us-east-1
+pytest
+```
 
 ## Security
 
