@@ -17,7 +17,6 @@ test = ["pytest", "boto3", "pytest-cov", "ruff"]
 [project.entry-points."sqlalchemy.dialects"]
 aurora_dsql = "aurora_dsql_sqlalchemy.psycopg2:AuroraDSQLDialect_psycopg2"
 "aurora_dsql.psycopg2" = "aurora_dsql_sqlalchemy.psycopg2:AuroraDSQLDialect_psycopg2"
-"aurora_dsql.psycopg" = "aurora_dsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg"
 
 [tool.setuptools]
 packages = ["aurora_dsql_sqlalchemy"]
