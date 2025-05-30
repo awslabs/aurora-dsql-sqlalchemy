@@ -1,13 +1,16 @@
-from sqlalchemy.dialects.postgresql.base import PGDialect, PGDDLCompiler, IDX_USING
-from sqlalchemy.sql import expression, coercions, roles
+from sqlalchemy.dialects.postgresql.base import PGDialect, PGDDLCompiler
 from sqlalchemy import sql, select, bindparam
 from sqlalchemy.dialects.postgresql import pg_catalog
 from functools import lru_cache
 
 class AuroraDSQLDDLCompiler(PGDDLCompiler):
-     def visit_create_index(self, create, **kw):
+
+    def visit_create_index(self, create, **kw):
+        """
+        modified from https://github.com/sqlalchemy/sqlalchemy/blob/rel_2_0_41/lib/sqlalchemy/dialects/postgresql/base.py
+        """
         preparer = self.preparer
-        index = create.element
+        index = create.element      
         self._verify_index_table(index)
         text = "CREATE "
         if index.unique:
@@ -24,36 +27,6 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
         text += "%s ON %s " % (
             self._prepared_index_name(index, include_schema=False),
             preparer.format_table(index.table),
-        )
-
-        using = index.dialect_options["postgresql"]["using"]
-        if using:
-            text += (
-                "USING %s "
-                % self.preparer.validate_sql_phrase(using, IDX_USING).lower()
-            )
-
-        ops = index.dialect_options["postgresql"]["ops"]
-        text += "(%s)" % (
-            ", ".join(
-                [
-                    self.sql_compiler.process(
-                        (
-                            expr.self_group()
-                            if not isinstance(expr, expression.ColumnClause)
-                            else expr
-                        ),
-                        include_table=False,
-                        literal_binds=True,
-                    )
-                    + (
-                        (" " + ops[expr.key])
-                        if hasattr(expr, "key") and expr.key in ops
-                        else ""
-                    )
-                    for expr in index.expressions
-                ]
-            )
         )
 
         includeclause = index.dialect_options["postgresql"]["include"]
@@ -74,32 +47,6 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
         elif nulls_not_distinct is False:
             text += " NULLS DISTINCT"
 
-        withclause = index.dialect_options["postgresql"]["with"]
-        if withclause:
-            text += " WITH (%s)" % (
-                ", ".join(
-                    [
-                        "%s = %s" % storage_parameter
-                        for storage_parameter in withclause.items()
-                    ]
-                )
-            )
-
-        tablespace_name = index.dialect_options["postgresql"]["tablespace"]
-        if tablespace_name:
-            text += " TABLESPACE %s" % preparer.quote(tablespace_name)
-
-        whereclause = index.dialect_options["postgresql"]["where"]
-        if whereclause is not None:
-            whereclause = coercions.expect(
-                roles.DDLExpressionRole, whereclause
-            )
-
-            where_compiled = self.sql_compiler.process(
-                whereclause, include_table=False, literal_binds=True
-            )
-            text += " WHERE " + where_compiled
-
         return text
 
 class AuroraDSQLDialect(PGDialect):
@@ -109,7 +56,7 @@ class AuroraDSQLDialect(PGDialect):
     ddl_compiler = AuroraDSQLDDLCompiler
     
     supports_sequences = False
-    supports_alter = False #  supports ALTER TABLE - used only for generating foreign key constraints in certain circumstances
+    supports_alter = False
     supports_native_enum = False
 
     _supports_create_index_async = True
@@ -127,6 +74,7 @@ class AuroraDSQLDialect(PGDialect):
         # the original code uses sql.func.json_build_object when server_version is greater than 10
         # json_build_object is not supported by Aurora DSQL
         # TODO: if json_build_object is supported in the future, the override of the function _columns_query is not needed
+
         identity = sql.null().label("identity_options")
 
         # join lateral performs the same as scalar_subquery here
