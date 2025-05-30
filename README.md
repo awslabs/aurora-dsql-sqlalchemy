@@ -14,7 +14,7 @@ To install these libraries use the following:
 
 ```
 
-After the aurora dsql dialect installation, you should be able to connect to the cluster by creating a SQLAlchemy engine via create_engine
+After the aurora dsql dialect installation, you should be able to connect to the cluster via create_engine
 
 ```
      url = URL.create(
@@ -38,9 +38,9 @@ After the aurora dsql dialect installation, you should be able to connect to the
 
 "aurora_dsql+psycopg2" specifies to use the `aurora_dsql` dialect with the driver `psycopg2`
 
-## Unit Tests
+## Integration Tests
 
-The following libraries are required to run the unit tests:
+The following libraries are required to run the integration tests:
 
 - boto3
 - pytest
