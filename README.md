@@ -25,7 +25,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 
 url = URL.create(
-    "aurora_dsql+psycopg2",
+    "auroradsql+psycopg2",
     username=admin,
     host=<CLUSTER_END_POINT>,
     password=<CLUSTER_TOKEN>,
@@ -43,7 +43,7 @@ url = URL.create(
 engine = create_engine(url)
 ```
 
-The connection string "aurora_dsql+psycopg2" specifies to use the `aurora_dsql` dialect with the driver `psycopg2`
+The connection string "auroradsql+psycopg2" specifies to use the `auroradsql` dialect with the driver `psycopg2`
 
 ## Integration Tests
 

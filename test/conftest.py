@@ -8,13 +8,13 @@ from sqlalchemy.testing import engines
 
 # Register your dialect
 registry.register(
-    "aurora_dsql",
-    "aurora_dsql_sqlalchemy.psycopg2",
+    "auroradsql",
+    "auroradsql_sqlalchemy.psycopg2",
     "AuroraDSQLDialect_psycopg2",
 )
 registry.register(
-    "aurora_dsql.psycopg2",
-    "aurora_dsql_sqlalchemy.psycopg2",
+    "auroradsql.psycopg2",
+    "auroradsql_sqlalchemy.psycopg2",
     "AuroraDSQLDialect_psycopg2",
 )
 
@@ -44,7 +44,7 @@ def custom_testing_engine(
     client = boto3.client("dsql", region_name=region)
 
     url = URL.create(
-        "aurora_dsql+psycopg2",
+        "auroradsql+psycopg2",
         username=cluster_user,
         host=cluster_endpoint,
         database="postgres",
