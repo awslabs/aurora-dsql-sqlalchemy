@@ -32,7 +32,6 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
             preparer.format_table(index.table),
         )
 
-        ops = index.dialect_options["auroradsql"]["ops"]
         text += "(%s)" % (
             ", ".join(
                 [
@@ -44,11 +43,6 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
                         ),
                         include_table=False,
                         literal_binds=True,
-                    )
-                    + (
-                        (" " + ops[expr.key])
-                        if hasattr(expr, "key") and expr.key in ops
-                        else ""
                     )
                     for expr in index.expressions
                 ]

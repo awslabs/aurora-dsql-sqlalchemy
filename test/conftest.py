@@ -53,7 +53,9 @@ def custom_testing_engine(
     print(f"Using custom URL from environment: {url}")
 
     options = {}
-    engine = original_testing_engine(url, options)
+    engine = original_testing_engine(
+        url, options, asyncio, transfer_staticpool, share_pool, _sqlite_savepoint
+    )
 
     @event.listens_for(engine, "do_connect")
     def add_token_to_params(dialect, conn_rec, cargs, cparams):
