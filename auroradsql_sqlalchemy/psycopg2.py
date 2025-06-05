@@ -6,6 +6,3 @@ from .base import AuroraDSQLDialect
 class AuroraDSQLDialect_psycopg2(PGDialect_psycopg2, AuroraDSQLDialect):
     driver = "psycopg2"  # driver name
     supports_statement_cache = True
-
-
-dialect = AuroraDSQLDialect_psycopg2

@@ -17,6 +17,10 @@ from auroradsql_sqlalchemy.psycopg2 import AuroraDSQLDialect_psycopg2
 class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
     """
     modified from https://github.com/sqlalchemy/sqlalchemy/blob/rel_2_0_41/test/dialect/postgresql/test_compiler.py
+
+    A SQL compiler test to check if the corresponding CREATE INDEX ASYNC SQL queries
+    is correctly generated
+
     """
 
     __dialect__ = AuroraDSQLDialect_psycopg2()
