@@ -3,6 +3,7 @@ from functools import lru_cache
 from sqlalchemy import bindparam, select, sql
 from sqlalchemy.dialects.postgresql import pg_catalog
 from sqlalchemy.dialects.postgresql.base import PGDDLCompiler, PGDialect
+from sqlalchemy.sql import expression
 
 
 class AuroraDSQLDDLCompiler(PGDDLCompiler):
@@ -31,7 +32,30 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
             preparer.format_table(index.table),
         )
 
-        includeclause = index.dialect_options["postgresql"]["include"]
+        ops = index.dialect_options["auroradsql"]["ops"]
+        text += "(%s)" % (
+            ", ".join(
+                [
+                    self.sql_compiler.process(
+                        (
+                            expr.self_group()
+                            if not isinstance(expr, expression.ColumnClause)
+                            else expr
+                        ),
+                        include_table=False,
+                        literal_binds=True,
+                    )
+                    + (
+                        (" " + ops[expr.key])
+                        if hasattr(expr, "key") and expr.key in ops
+                        else ""
+                    )
+                    for expr in index.expressions
+                ]
+            )
+        )
+
+        includeclause = index.dialect_options["auroradsql"]["include"]
         if includeclause:
             inclusions = [
                 index.table.c[col] if isinstance(col, str) else col
@@ -41,7 +65,7 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
                 [preparer.quote(c.name) for c in inclusions]
             )
 
-        nulls_not_distinct = index.dialect_options["postgresql"]["nulls_not_distinct"]
+        nulls_not_distinct = index.dialect_options["auroradsql"]["nulls_not_distinct"]
         if nulls_not_distinct is True:
             text += " NULLS NOT DISTINCT"
         elif nulls_not_distinct is False:
@@ -51,7 +75,7 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
 
 
 class AuroraDSQLDialect(PGDialect):
-    name = "aurora_dsql"
+    name = "auroradsql"
     default_schema_name = "public"
 
     ddl_compiler = AuroraDSQLDDLCompiler
