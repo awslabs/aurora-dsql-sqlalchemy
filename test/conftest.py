@@ -18,6 +18,12 @@ registry.register(
     "AuroraDSQLDialect_psycopg2",
 )
 
+registry.register(
+    "auroradsql.psycopg",
+    "auroradsql_sqlalchemy.psycopg",
+    "AuroraDSQLDialect_psycopg",
+)
+
 
 original_testing_engine = engines.testing_engine
 

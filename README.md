@@ -7,6 +7,7 @@ Amazon Aurora DSQL dialect for SQLAlchemy enables Python applications to connect
 - Python 3.9 or higher
 - SQLAlchemy 2.0.0 or higher
 - psycopg2-binary 2.9.0 or higher
+- psycopg 3.2.0 or higher
 
 ## Installation
 
@@ -56,6 +57,7 @@ To run the test use the following:
 
 ```
 pip install -e '.[test]'
+wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
 export CLUSTER_ENDPOINT=<YOUR_CLUSTER_HOSTNAME>
 export CLUSTER_USER=admin
 export REGION=us-east-1
