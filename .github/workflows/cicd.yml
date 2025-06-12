@@ -52,8 +52,8 @@ jobs:
           python3 -m venv sqlalchemy-integ
           source sqlalchemy-integ/bin/activate
           pip install --upgrade pip
-          pip install -e .
-          pip install -e '.[test]'
+          pip install .
+          pip install '.[test,psycopg2]'
           python3 -c "import boto3; print(boto3.__version__)"
           pip list
 
