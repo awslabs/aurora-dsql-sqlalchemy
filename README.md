@@ -45,6 +45,7 @@ engine = create_engine(url)
 ```
 
 The connection string "auroradsql+psycopg2" specifies to use the `auroradsql` dialect with the driver `psycopg2`
+To use the driver `psycopg` (psycopg3) , change the connection string to "auroradsql+psycopg".
 
 ## Integration Tests
 
