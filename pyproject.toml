@@ -7,16 +7,20 @@ name = "aurora-dsql-sqlalchemy"
 version = "0.1.0"
 requires-python = ">=3.9"
 dependencies = [
-    "sqlalchemy>=2.0.0",
-    "psycopg2-binary>=2.9.0",
+    "sqlalchemy>=2.0.0"
 ]
 
 [project.optional-dependencies]
 test = ["pytest", "boto3", "pytest-cov", "ruff"]
+psycopg2 = ["psycopg2-binary>=2.9.0"]
+psycopg = ["psycopg>=3.2.0"]
 
 [project.entry-points."sqlalchemy.dialects"]
-auroradsql = "auroradsql_sqlalchemy.psycopg2:AuroraDSQLDialect_psycopg2"
+# The default dialect uses psycopg (psycopg3) 
+auroradsql = "auroradsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg"
 "auroradsql.psycopg2" = "auroradsql_sqlalchemy.psycopg2:AuroraDSQLDialect_psycopg2"
+# Note: psyscopg (psycopg3) 
+"auroradsql.psycopg" = "auroradsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg" 
 
 [tool.setuptools]
 packages = ["auroradsql_sqlalchemy"]
