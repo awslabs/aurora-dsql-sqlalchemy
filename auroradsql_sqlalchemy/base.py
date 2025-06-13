@@ -49,7 +49,7 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
             )
         )
 
-        includeclause = index.dialect_options["auroradsql"]["include"]
+        includeclause = index.dialect_options[self.dialect.name]["include"]
         if includeclause:
             inclusions = [
                 index.table.c[col] if isinstance(col, str) else col
@@ -59,7 +59,9 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
                 [preparer.quote(c.name) for c in inclusions]
             )
 
-        nulls_not_distinct = index.dialect_options["auroradsql"]["nulls_not_distinct"]
+        nulls_not_distinct = index.dialect_options[self.dialect.name][
+            "nulls_not_distinct"
+        ]
         if nulls_not_distinct is True:
             text += " NULLS NOT DISTINCT"
         elif nulls_not_distinct is False:
