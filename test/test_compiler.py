@@ -1,3 +1,5 @@
+import os
+
 from sqlalchemy import (
     Column,
     Index,
@@ -11,9 +13,8 @@ from sqlalchemy.testing import fixtures
 from sqlalchemy.testing.assertions import AssertsCompiledSQL
 from sqlalchemy.testing.suite.test_dialect import testing
 
-from auroradsql_sqlalchemy.psycopg2 import AuroraDSQLDialect_psycopg2
 from auroradsql_sqlalchemy.psycopg import AuroraDSQLDialect_psycopg
-import os
+from auroradsql_sqlalchemy.psycopg2 import AuroraDSQLDialect_psycopg2
 
 
 class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
