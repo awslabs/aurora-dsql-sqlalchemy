@@ -28,6 +28,7 @@ packages = ["auroradsql_sqlalchemy"]
 [tool.pytest.ini_options]
 addopts = "-v  -r chars -s" 
 python_files = ["test/*test_*.py"]
+testpaths = ["test"]
 
 [tool.ruff]
 target-version = "py39"
