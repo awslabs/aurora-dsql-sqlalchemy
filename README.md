@@ -117,6 +117,10 @@ When working with DSQL, it is not recommended to rely on SQLAlchemy's automatic 
 
     ```
 
+    ### Index Interface Limitation
+
+  - NULLS FIRST | LAST - SQLalchemy's Index() interface does not have a way to pass in the sort order of null and non-null columns. (Default: NULLS LAST). If NULLS FIRST is required, please refer to the syntax as specified in [Asynchronous indexes in Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/working-with-create-index-async.html) and execute the corresponding SQL query directly in SQLAlchemy.
+
 - Foreign Keys: DSQL does not support foreign key constraints. The dialect disables foreign key creation. Note that referential integrity must be maintained at the application level.
 - Column Metadata: The dialect fixes an issue related to "datatype json not supported" when calling SQLAlchemy's metadata() API.
 
