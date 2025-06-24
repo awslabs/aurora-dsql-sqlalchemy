@@ -62,6 +62,64 @@ engine = create_engine(url)
 The connection string "auroradsql+psycopg" specifies to use the `auroradsql` dialect with the driver `psycopg` (psycopg3)
 To use the driver `psycopg2` , change the connection string to "auroradsql+psycopg2".
 
+# Best Practices
+
+### Primary Key Generation
+
+SQLAlchemy applications connecting to Aurora DSQL should use UUID for the primary key column since auto-incrementing integer keys (sequences or serial) are not supported in DSQL. The following column definition can be used to define an UUID primary key column.
+
+```
+Column(
+    "id",
+    UUID(as_uuid=True),
+    primary_key=True,
+    default=text('gen_random_uuid()')
+)
+```
+
+### Auto Data Definition Language (Auto-DDL)
+
+When working with DSQL, it is not recommended to rely on SQLAlchemy's automatic schema generation especially in a production environment. This feature should only be used in a development or testing environment.
+
+# Dialect Features and Limitations
+
+- Psycopg (psycopg3) Support: When connecting to DSQL using the default postgresql dialect with psycopg, an unsupported `SAVEPOINT` error occurs. The DSQL dialect addresses this issue by disabling the `SAVEPOINT` during connection.
+- Index Creation: The DSQL dialect generates the correct syntax for index creation
+  `CREATE INDEX ASYNC`
+
+  The following parameters are used for customizing index creation
+
+  - `auroradsql_include` - specifies which columns to includes in an index by using the `INCLUDE` clause
+
+    ```
+    Index(
+        "include_index",
+        table.c.id,
+        auroradsql_include=['name', 'email']
+    )
+
+    # Generated SQL
+     CREATE INDEX ASYNC include_index ON table (id) INCLUDE (name, email)
+    ```
+
+  - `auroradsql_nulls_not_distinct` - controls how NULL values are treated in unique indexes
+
+    ```
+    Index(
+        "idx_name",
+        table.c.column,
+        unique=True,
+        auroradsql_nulls_not_distinct=True
+    )
+
+    # Generated SQL
+    CREATE UNIQUE INDEX idx_name ON table (column) NULLS NOT DISTINCT
+
+    ```
+
+- Foreign Keys: DSQL does not support foreign key constraints. The dialect disables foreign key creation. Note that referential integrity must be maintained at the application level.
+- Column Metadata: The dialect fixes an issue related to "datatype json not supported" when calling SQLAlchemy's metadata() API.
+
 ## Integration Tests
 
 The following libraries are required to run the integration tests:

@@ -12,6 +12,8 @@ from sqlalchemy.testing.assertions import AssertsCompiledSQL
 from sqlalchemy.testing.suite.test_dialect import testing
 
 from auroradsql_sqlalchemy.psycopg2 import AuroraDSQLDialect_psycopg2
+from auroradsql_sqlalchemy.psycopg import AuroraDSQLDialect_psycopg
+import os
 
 
 class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
@@ -23,7 +25,16 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
 
     """
 
-    __dialect__ = AuroraDSQLDialect_psycopg2()
+    driver = os.environ.get("DRIVER", None)
+    assert driver is not None, "DRIVER environment variable is not set"
+
+    __dialect__ = None
+    if driver == "psycopg2":
+        __dialect__ = AuroraDSQLDialect_psycopg2()
+    else:
+        __dialect__ = AuroraDSQLDialect_psycopg()
+
+    assert __dialect__ is not None, "dialect is not set"
 
     @testing.combinations(
         (
@@ -61,7 +72,7 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
         ),
     )
     def test_nulls_not_distinct(self, expr_fn, expected):
-        dd = AuroraDSQLDialect_psycopg2()
+        dd = self.__dialect__
         m = MetaData()
         tbl = Table(
             "test_tbl",
@@ -87,7 +98,7 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
         self.assert_compile(
             schema.CreateIndex(idx),
             "CREATE INDEX ASYNC foo ON test (x) INCLUDE (y)",
-            dialect=AuroraDSQLDialect_psycopg2(),
+            dialect=self.__dialect__,
         )
 
     def test_index_extra_include_2(self):
@@ -103,5 +114,5 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
         self.assert_compile(
             schema.CreateIndex(idx),
             "CREATE INDEX ASYNC foo ON test (x) INCLUDE (y)",
-            dialect=AuroraDSQLDialect_psycopg2(),
+            dialect=self.__dialect__,
         )
