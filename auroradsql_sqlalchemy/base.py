@@ -3,10 +3,61 @@ from functools import lru_cache
 from sqlalchemy import bindparam, select, sql
 from sqlalchemy.dialects.postgresql import pg_catalog
 from sqlalchemy.dialects.postgresql.base import PGDDLCompiler, PGDialect
+from sqlalchemy.schema import ForeignKeyConstraint
 from sqlalchemy.sql import expression
 
 
 class AuroraDSQLDDLCompiler(PGDDLCompiler):
+
+    def create_table_constraints(
+        self, table, _include_foreign_key_constraints=None, **kw
+    ):
+        """
+        modified from https://github.com/sqlalchemy/sqlalchemy/blob/rel_2_0_41/lib/sqlalchemy/sql/compiler.py
+        """
+
+        constraints = []
+        if table.primary_key:
+            constraints.append(table.primary_key)
+
+        all_fkcs = table.foreign_key_constraints
+        if _include_foreign_key_constraints is not None:
+            omit_fkcs = all_fkcs.difference(_include_foreign_key_constraints)
+        else:
+            omit_fkcs = set()
+
+        constraints.extend(
+            [
+                c
+                for c in table._sorted_constraints
+                if c is not table.primary_key and c not in omit_fkcs
+            ]
+        )
+
+        constraints_without_fk = []
+        for constraint in table.constraints:
+            # Disable foreign key creation since DSQL
+            # doesn't support foreign key
+            if isinstance(constraint, ForeignKeyConstraint):
+                pass
+            else:
+                constraints_without_fk.append(constraint)
+
+        constraints = constraints_without_fk
+
+        return ", \n\t".join(
+            p
+            for p in (
+                self.process(constraint)
+                for constraint in constraints
+                if (constraint._should_create_for_compiler(self))
+                and (
+                    not self.dialect.supports_alter
+                    or not getattr(constraint, "use_alter", False)
+                )
+            )
+            if p is not None
+        )
 
     def visit_create_index(self, create, **kw):
         """
