@@ -9,28 +9,24 @@ Aurora DSQL is a distributed SQL database service that provides high availabilit
 your PostgreSQL-compatible applications. SQLAlchemy is a popular object-relational mapping framework for Python that allows
 you to persist Python objects to a database while abstracting the database interactions.
 
-> **Note**
->
-> Note that SQLAlchemy with Psycopg3 does not work with Aurora DSQL. SQLAlchemy with Psycopg3 uses nested transactions which rely on savepoints as part of the connection setup. Savepoints are not supported by Aurora DSQL.
-
 ## About the code example
 
 The example demonstrates a flexible connection approach that works for both admin and non-admin users:
 
-* When connecting as an **admin user**, the example uses the `public` schema and generates an admin authentication
+- When connecting as an **admin user**, the example uses the `public` schema and generates an admin authentication
   token.
-* When connecting as a **non-admin user**, the example uses a custom `myschema` schema and generates a standard
+- When connecting as a **non-admin user**, the example uses a custom `myschema` schema and generates a standard
   authentication token.
 
 The code automatically detects the user type and adjusts its behavior accordingly.
 
 ## ⚠️ Important
 
-* Running this code might result in charges to your AWS account.
-* We recommend that you grant your code least privilege. At most, grant only the
+- Running this code might result in charges to your AWS account.
+- We recommend that you grant your code least privilege. At most, grant only the
   minimum permissions required to perform the task. For more information, see
   [Grant least privilege](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html#grant-least-privilege).
-* This code is not tested in every AWS Region. For more information, see
+- This code is not tested in every AWS Region. For more information, see
   [AWS Regional Services](https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services).
 
 ## TLS connection configuration
@@ -38,27 +34,27 @@ The code automatically detects the user type and adjusts its behavior accordingl
 This example uses direct TLS connections where supported, and verifies the server certificate is trusted. Verified SSL
 connections should be used where possible to ensure data security during transmission.
 
-* Driver versions following the release of PostgreSQL 17 support direct TLS connections, bypassing the traditional
+- Driver versions following the release of PostgreSQL 17 support direct TLS connections, bypassing the traditional
   PostgreSQL connection preamble
-* Direct TLS connections provide improved connection performance and enhanced security
-* Not all PostgreSQL drivers support direct TLS connections yet, or only in recent versions following PostgreSQL 17
-* Ensure your installed driver version supports direct TLS negotiation, or use a version that is at least as recent as
+- Direct TLS connections provide improved connection performance and enhanced security
+- Not all PostgreSQL drivers support direct TLS connections yet, or only in recent versions following PostgreSQL 17
+- Ensure your installed driver version supports direct TLS negotiation, or use a version that is at least as recent as
   the one used in this sample
-* If your driver doesn't support direct TLS connections, you may need to use the traditional preamble connection instead
+- If your driver doesn't support direct TLS connections, you may need to use the traditional preamble connection instead
 
 ## Run the example
 
 ### Prerequisites
 
-* You must have an AWS account, and have your default credentials and AWS Region
+- You must have an AWS account, and have your default credentials and AWS Region
   configured as described in the
   [Globally configuring AWS SDKs and tools](https://docs.aws.amazon.com/credref/latest/refdocs/creds-config-files.html)
   guide.
-* [Python 3.8.0](https://www.python.org/) or later.
-* You must have an Aurora DSQL cluster. For information about creating an Aurora DSQL cluster, see the
+- [Python 3.9.0](https://www.python.org/) or later.
+- You must have an Aurora DSQL cluster. For information about creating an Aurora DSQL cluster, see the
   [Getting started with Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/getting-started.html)
   guide.
-* If connecting as a non-admin user, ensure the user is linked to an IAM role and is granted access to the `myschema`
+- If connecting as a non-admin user, ensure the user is linked to an IAM role and is granted access to the `myschema`
   schema. See the
   [Using database roles with IAM roles](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/using-database-and-iam-roles.html)
   guide.
@@ -95,7 +91,7 @@ pip install "aurora-dsql-sqlalchemy"
 
 The example demonstrates the following operations:
 
-- Opening a connection pool to an Aurora DSQL cluster using a SQLAlchemy 
+- Opening a connection pool to an Aurora DSQL cluster using a SQLAlchemy
 - Creating several SQLAlchemy entities
 - Creating and querying objects that are persisted in DSQL
 
@@ -155,23 +151,23 @@ def create_dsql_engine():
 
     # Create the URL, note that the password token is added when connections are created.
     url = URL.create(
-        "auroradsql+psycopg2", 
-        username=cluster_user, 
-        host=cluster_endpoint, 
+        "auroradsql+psycopg2",
+        username=cluster_user,
+        host=cluster_endpoint,
         database="postgres"
     )
-    
+
     # Create the engine
     engine = create_engine(
-        url, 
+        url,
         connect_args={"sslmode": "verify-full", "sslrootcert": "./root.pem"},
     )
-    
+
     # Adds a listener that creates a new token every time a new connection is created in the SQLAlchemy engine
     @event.listens_for(engine, "do_connect")
     def add_token_to_params(dialect, conn_rec, cargs, cparams):
         # Generate a fresh token for this connection
-        fresh_token = generate_token(client, cluster_user, cluster_endpoint, region)        
+        fresh_token = generate_token(client, cluster_user, cluster_endpoint, region)
         # Update the password in connection parameters
         cparams["password"] = fresh_token
 
@@ -196,8 +192,9 @@ def generate_token(client, cluster_user, cluster_endpoint, region):
 ```
 
 #### Connection Pooling
-In SQLAlchemy, [connection pooling](https://docs.sqlalchemy.org/en/20/core/pooling.html#connection-pool-configuration) is 
-enabled by default when the engine is created and each engine is automatically associated with a connection pool. 
+
+In SQLAlchemy, [connection pooling](https://docs.sqlalchemy.org/en/20/core/pooling.html#connection-pool-configuration) is
+enabled by default when the engine is created and each engine is automatically associated with a connection pool.
 In the example above, a new token is created for each connection opened in the connection pool. Note that DSQL connections
 will automatically close after one hour. The connection pool will open new connections as needed.
 
@@ -208,6 +205,7 @@ will automatically close after one hour. The connection pool will open new conne
 DSQL does not support serialized primary keys or identity columns (auto-incrementing integers) that are commonly used in traditional relational databases. Instead, it is recommended to use UUID (Universally Unique Identifier) as the primary key for your entities.
 
 Here's how to define a UUID primary key in your entity class:
+
 ```py
     id = Column("id", UUID, primary_key=True, default=text('gen_random_uuid()'))
 ```
@@ -228,7 +226,7 @@ class Base(DeclarativeBase):
 # Define a Owner table
 class Owner(Base):
     __tablename__ = "owner"
-    
+
     id = Column(
                 "id", UUID, primary_key=True, default=text('gen_random_uuid()')
             )
@@ -239,7 +237,7 @@ class Owner(Base):
 # Define a Pet table
 class Pet(Base):
     __tablename__ = "pet"
-    
+
     id = Column(
                 "id", UUID, primary_key=True, default=text('gen_random_uuid()')
             )
@@ -255,7 +253,7 @@ class Pet(Base):
 # that lets us define the many-to-many mapping
 class VetSpecialties(Base):
     __tablename__ = "vetSpecialties"
-    
+
     id = Column(
                 "id", UUID, primary_key=True, default=text('gen_random_uuid()')
             )
@@ -272,11 +270,11 @@ class Specialty(Base):
     id = Column(
                 "name", String(80), primary_key=True
             )
-    
+
 # Define a Vet table
 class Vet(Base):
     __tablename__ = "vet"
-    
+
     id = Column(
                 "id", UUID, primary_key=True, default=text('gen_random_uuid()')
             )
@@ -289,12 +287,13 @@ class Vet(Base):
 
 ## Additional resources
 
-* [Amazon Aurora DSQL Documentation](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/what-is-aurora-dsql.html)
-* [SQLAlchemy Documentation](https://docs.sqlalchemy.org/en/20/)
-* [Psycopg Documentation](https://www.psycopg.org/docs/)
-* [AWS SDK for Python (Boto3) Documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+- [Amazon Aurora DSQL Documentation](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/what-is-aurora-dsql.html)
+- [SQLAlchemy Documentation](https://docs.sqlalchemy.org/en/20/)
+- [Psycopg Documentation](https://www.psycopg.org/docs/)
+- [AWS SDK for Python (Boto3) Documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
+
 ---
 
-Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved. 
+Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
 SPDX-License-Identifier: MIT-0
