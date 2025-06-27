@@ -265,9 +265,7 @@ def demo_retry_mechanism(engine):
     # Run statement that will fail, it will not be retried as
     # the error is not OC001 or OC000
     try:
-        print(
-            "Dropping test table abc again which is expected to fail as it does not exist"
-        )
+        print("Dropping test table abc again which is expected to fail")
         execute_sql_statement_retry(engine, "DROP TABLE abc;")
     except Exception as e:
         assert 'table "abc" does not exist' in str(e).lower()

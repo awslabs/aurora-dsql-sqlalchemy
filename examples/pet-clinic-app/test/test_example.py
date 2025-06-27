@@ -1,9 +1,8 @@
 import pytest
-
 from src.example import (
+    create_dsql_engine,
     demo_pet_clinic_operations,
     demo_retry_mechanism,
-    create_dsql_engine,
 )
 
 
