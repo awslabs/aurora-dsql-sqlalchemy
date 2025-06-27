@@ -20,6 +20,7 @@ __pycache__/
 /doc/_apidoc/
 /build
 **/*/build/
+**/*/box/
 
 venv
 
