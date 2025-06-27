@@ -22,6 +22,7 @@ NON_ADMIN_SCHEMA = "myschema"
 
 
 def create_dsql_engine():
+    print("Starting to create DSQL Engine")
     cluster_user = os.environ.get("CLUSTER_USER", None)
     assert cluster_user is not None, "CLUSTER_USER environment variable is not set"
 
@@ -53,7 +54,7 @@ def create_dsql_engine():
         connect_args["sslnegotiation"] = "direct"
 
     # Create the engine
-    engine = create_engine(url, connect_args=connect_args)
+    engine = create_engine(url, connect_args=connect_args, pool_size=5, max_overflow=10)
 
     # Adds a listener that creates a new token every time a new connection is created
     # in the SQLAlchemy engine
@@ -147,18 +148,19 @@ class Vet(Base):
     )
 
 
-def example():
-    # Create the engine
-    engine = create_dsql_engine()
+def demo_pet_clinic_operations(engine):
 
+    print("Starting demo pet clinic operations")
+    print("Starting cleanup of existing tables")
     # Clean up any existing tables
     for table in Base.metadata.tables.values():
         table.drop(engine, checkfirst=True)
-
+    print("Successfully cleaned up existing tables")
+    print("Creating new tables")
     # Create all tables
     for table in Base.metadata.tables.values():
         table.create(engine, checkfirst=True)
-
+    print("All tables created successfully")
     session = Session(engine)
     # Owner-Pet relationship is one to many.
     ## Insert owners
@@ -170,15 +172,22 @@ def example():
     pet_2 = Pet(name="Pet-2", birth_date="2021-7-23", owner=mary_major)
 
     session.add_all([john_doe, mary_major, pet_1, pet_2])
+    print("Created owners: John Doe, Mary Major")
+    print("Created pets: Pet-1, Pet-2")
     session.commit()
+    print("Successfully committed Owner and Pet data")
 
     # Read back data for the pet.
+    print("Fetching Pet-1 data")
     pet_query = select(Pet).where(Pet.name == "Pet-1")
     pet_1 = session.execute(pet_query).fetchone()[0]
+    print("Successfully fetched Pet-1 data")
 
     # Get the corresponding owner
+    print("Fetching Pet-1's owner data")
     owner_query = select(Owner).where(Owner.id == pet_1.owner_id)
     john_doe = session.execute(owner_query).fetchone()[0]
+    print("Successfully fetched Pet-1's owner data")
 
     # Test: check read values
     assert pet_1.name == "Pet-1"
@@ -196,14 +205,21 @@ def example():
     carlos_salazar = Vet(name="Carlos Salazar", specialties=[dogs, cats])
 
     session.add_all([dogs, cats, akua_mansa, carlos_salazar])
+    print("Created vet specialties: Dogs, Cats")
+    print("Created vets: Akua Mansa, Carlos Salazar")
     session.commit()
+    print("Successfully committed vet specialty and vet data")
 
     # Read back data for the vets.
+    print("Fetching vet data: Akua Mansa")
     vet_query = select(Vet).where(Vet.name == "Akua Mansa")
     akua_mansa = session.execute(vet_query).fetchone()[0]
+    print("Successfully fetched vet data: Akua Mansa")
 
+    print("Fetching vet data: Carlos Salazar")
     vet_query = select(Vet).where(Vet.name == "Carlos Salazar")
     carlos_salazar = session.execute(vet_query).fetchone()[0]
+    print("Successfully fetched vet data: Carlos Salazar")
 
     # Test: check read value
     assert akua_mansa.name == "Akua Mansa"
@@ -212,6 +228,8 @@ def example():
     assert carlos_salazar.name == "Carlos Salazar"
     assert carlos_salazar.specialties[0].id == "Cats"
     assert carlos_salazar.specialties[1].id == "Dogs"
+
+    print("Finished demo pet clinic operations")
 
 
 # Execute SQL Statement with retry
@@ -231,30 +249,42 @@ def execute_sql_statement_retry(engine, sql_statement, max_retries=None):
                     max_retries -= 1
 
 
-def run_retry():
-    # Create the engine
-    engine = create_dsql_engine()
+def demo_retry_mechanism(engine):
 
+    print("Starting demo retry mechanism")
     # Create and drop the table, will retry until success is reached
+    print("Creating test table abc")
     execute_sql_statement_retry(
         engine, "CREATE TABLE IF NOT EXISTS abc (id UUID NOT NULL);"
     )
+    print("Created test table abc")
+    print("Dropping test table abc")
     execute_sql_statement_retry(engine, "DROP TABLE IF EXISTS abc;")
+    print("Dropped test table abc")
 
     # Run statement that will fail, it will not be retried as
     # the error is not OC001 or OC000
     try:
+        print(
+            "Dropping test table abc again which is expected to fail as it does not exist"
+        )
         execute_sql_statement_retry(engine, "DROP TABLE abc;")
     except Exception as e:
         assert 'table "abc" does not exist' in str(e).lower()
 
+    print("Creating test table abc with a maximum of 3 retries")
     # Create and drop the table, with maximum retries of 3
     execute_sql_statement_retry(
         engine, "CREATE TABLE IF NOT EXISTS abc (id UUID NOT NULL);", 3
     )
+    print("Created test table abc")
+    print("Dropping test table abc with a maximum of 3 retries")
     execute_sql_statement_retry(engine, "DROP TABLE IF EXISTS abc;", 3)
+    print("Dropped test table abc")
+    print("Finished demo retry mechanism")
 
 
 if __name__ == "__main__":
-    example()
-    run_retry()
+    engine = create_dsql_engine()
+    demo_pet_clinic_operations(engine)
+    demo_retry_mechanism(engine)

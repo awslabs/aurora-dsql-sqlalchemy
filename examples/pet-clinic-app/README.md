@@ -61,7 +61,7 @@ connections should be used where possible to ensure data security during transmi
 
 ### Set up environment for examples
 
-1.  Clone Repository and download root certificate 
+1.  Clone Repository and download root certificate
 
 ```
 # Clone the entire repository
@@ -88,7 +88,8 @@ source .venv/bin/activate  # Linux, macOS
 pip install "psycopg2-binary>=2.9"
 pip install "sqlalchemy"
 pip install "boto3>=1.35.74"
-pip install "aurora-dsql-sqlalchemy"
+pip install ../../ # temporary way to install dialect from the repo directly
+#pip install "aurora-dsql-sqlalchemy" # TODO enable this once the dialect is published
 ```
 
 ### Run the code
@@ -165,6 +166,8 @@ def create_dsql_engine():
     engine = create_engine(
         url,
         connect_args={"sslmode": "verify-full", "sslrootcert": "./root.pem"},
+        pool_size=5,
+        max_overflow=10
     )
 
     # Adds a listener that creates a new token every time a new connection is created in the SQLAlchemy engine
