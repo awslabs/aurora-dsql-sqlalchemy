@@ -1,19 +1,23 @@
 import pytest
 from sqlalchemy import Column, Integer, String, Table, bindparam, select, testing
 from sqlalchemy.testing import config, eq_, fixtures
-from sqlalchemy.testing.suite.test_dialect import *  # noqa: F403
-
-DifficultParametersTest = pytest.mark.skip(
-    # The original DifficultParametersTest has the following issue
-    # - serial as the primary key
-    # - mixed dml and ddl are not supported
-    reason="This test is replaced with DifficultParametersDisableAutoIncrementTest. "
-)(
-    DifficultParametersTest  # noqa: F405
+from sqlalchemy.testing.suite.test_dialect import (
+    PingTest,
+    ExceptionTest,
+    EscapingTest,
+    ReturningGuardsTest,
 )
 
 
 class DifficultParametersDisableAutoIncrementTest(fixtures.TestBase):
+    """
+    modified from https://github.com/sqlalchemy/sqlalchemy/blob/rel_2_0_41/lib/sqlalchemy/testing/suite/test_dialect.py
+
+    This test replaces DifficultParametersTest which has the following
+    - serial as the primary key
+    - mixed dml and ddl are not supported
+    """
+
     __backend__ = True
 
     tough_parameters = testing.combinations(
