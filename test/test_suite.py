@@ -1,11 +1,10 @@
-import pytest
 from sqlalchemy import Column, Integer, String, Table, bindparam, select, testing
 from sqlalchemy.testing import config, eq_, fixtures
 from sqlalchemy.testing.suite.test_dialect import (
-    PingTest,
-    ExceptionTest,
-    EscapingTest,
-    ReturningGuardsTest,
+    EscapingTest,  # noqa: F401
+    ExceptionTest,  # noqa: F401
+    PingTest,  # noqa: F401
+    ReturningGuardsTest,  # noqa: F401
 )
 
 

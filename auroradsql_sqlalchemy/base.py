@@ -128,6 +128,8 @@ class AuroraDSQLDialect(PGDialect):
     ddl_compiler = AuroraDSQLDDLCompiler
 
     supports_sequences = False
+    preexecute_autoincrement_sequences = False
+
     supports_alter = False
     supports_native_enum = False
 
