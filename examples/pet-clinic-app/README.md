@@ -59,17 +59,21 @@ connections should be used where possible to ensure data security during transmi
   [Using database roles with IAM roles](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/using-database-and-iam-roles.html)
   guide.
 
-### Download the Amazon root certificate from the official trust store
+### Set up environment for examples
 
-Download the Amazon root certificate from the official trust store:
+1.  Clone Repository and download root certificate 
 
 ```
+# Clone the entire repository
+git clone https://github.com/awslabs/aurora-dsql-sqlalchemy.git
+# Change to the specific directory
+cd aurora-dsql-sqlalchemy/examples/pet-clinic-app
+
+# Download the Amazon root certificate from the official trust store:
 wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
 ```
 
-### Set up environment for examples
-
-1. Create and activate a Python virtual environment:
+2. Create and activate a Python virtual environment:
 
 ```bash
 python3 -m venv .venv
@@ -78,7 +82,7 @@ source .venv/bin/activate  # Linux, macOS
 .venv\Scripts\activate     # Windows
 ```
 
-2. Install the required packages for running the examples:
+3. Install the required packages for running the examples:
 
 ```bash
 pip install "psycopg2-binary>=2.9"
@@ -209,6 +213,8 @@ Here's how to define a UUID primary key in your entity class:
 ```py
     id = Column("id", UUID, primary_key=True, default=text('gen_random_uuid()'))
 ```
+
+`gen_random_uuid()` returns UUID version 4 as the default value
 
 #### Model definitions
 
