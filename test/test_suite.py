@@ -4,7 +4,10 @@ from sqlalchemy.testing import config, eq_, fixtures
 from sqlalchemy.testing.suite.test_dialect import *  # noqa: F403
 
 DifficultParametersTest = pytest.mark.skip(
-    reason="""This test is replaced with DifficultParametersDisableAutoIncrementTest"""
+    # The original DifficultParametersTest has the following issue
+    # - serial as the primary key
+    # - mixed dml and ddl are not supported
+    reason="This test is replaced with DifficultParametersDisableAutoIncrementTest. "
 )(
     DifficultParametersTest  # noqa: F405
 )
