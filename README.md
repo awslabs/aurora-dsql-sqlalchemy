@@ -19,7 +19,9 @@ psycopg (psycopg3)
 
 ## Installation
 
-Install the packages directly from the repository:
+### Install the packages directly from the repository:
+
+[TODO] to be removed once this package is pushed to pypi
 
 ```
 pip install .
@@ -29,6 +31,19 @@ pip install '.[psycopg2]'
 
 # psycopg (psycopg3)
 pip install '.[psycopg]'
+
+```
+
+Install the packages
+
+```
+pip install aurora-dsql-sqlalchemy
+
+# driver installation
+pip install psycopg2-binary
+
+# psycopg (psycopg3)
+pip install psycopg-binary
 
 ```
 
@@ -77,9 +92,7 @@ Column(
 )
 ```
 
-### Auto Data Definition Language (Auto-DDL)
-
-When working with DSQL, it is not recommended to rely on SQLAlchemy's automatic schema generation especially in a production environment. This feature should only be used in a development or testing environment.
+`gen_random_uuid()` returns UUID version 4 as the default value
 
 # Dialect Features and Limitations
 
@@ -134,8 +147,15 @@ The following libraries are required to run the integration tests:
 To run the test use the following:
 
 ```
-pip install '.[test,psycopg]' # add psycopg2 if testing via psycopg2
+# Clone the entire repository
+git clone https://github.com/awslabs/aurora-dsql-sqlalchemy.git
+cd aurora-dsql-sqlalchemy
+
+# Download the Amazon root certificate from the official trust store:
 wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
+
+pip install '.[test,psycopg]' # add psycopg2 if testing via psycopg2
+
 export CLUSTER_ENDPOINT=<YOUR_CLUSTER_HOSTNAME>
 export CLUSTER_USER=admin
 export REGION=us-east-1
