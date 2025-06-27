@@ -19,7 +19,9 @@ psycopg (psycopg3)
 
 ## Installation
 
-Install the packages directly from the repository:
+### Install the packages directly from the repository:
+
+[TODO] to be removed once this package is pushed to pypi
 
 ```
 pip install .
@@ -29,6 +31,19 @@ pip install '.[psycopg2]'
 
 # psycopg (psycopg3)
 pip install '.[psycopg]'
+
+```
+
+Install the packages
+
+```
+pip install aurora-dsql-sqlalchemy
+
+# driver installation
+pip install psycopg2-binary
+
+# psycopg (psycopg3)
+pip install psycopg-binary
 
 ```
 
@@ -62,6 +77,66 @@ engine = create_engine(url)
 The connection string "auroradsql+psycopg" specifies to use the `auroradsql` dialect with the driver `psycopg` (psycopg3)
 To use the driver `psycopg2` , change the connection string to "auroradsql+psycopg2".
 
+# Best Practices
+
+### Primary Key Generation
+
+SQLAlchemy applications connecting to Aurora DSQL should use UUID for the primary key column since auto-incrementing integer keys (sequences or serial) are not supported in DSQL. The following column definition can be used to define an UUID primary key column.
+
+```
+Column(
+    "id",
+    UUID(as_uuid=True),
+    primary_key=True,
+    default=text('gen_random_uuid()')
+)
+```
+
+`gen_random_uuid()` returns UUID version 4 as the default value
+
+# Dialect Features and Limitations
+
+- Psycopg (psycopg3) Support: When connecting to DSQL using the default postgresql dialect with psycopg, an unsupported `SAVEPOINT` error occurs. The DSQL dialect addresses this issue by disabling the `SAVEPOINT` during connection.
+- Index Creation: The DSQL dialect generates the correct syntax for index creation
+  `CREATE INDEX ASYNC`
+
+  The following parameters are used for customizing index creation
+
+  - `auroradsql_include` - specifies which columns to includes in an index by using the `INCLUDE` clause
+
+    ```
+    Index(
+        "include_index",
+        table.c.id,
+        auroradsql_include=['name', 'email']
+    )
+
+    # Generated SQL
+     CREATE INDEX ASYNC include_index ON table (id) INCLUDE (name, email)
+    ```
+
+  - `auroradsql_nulls_not_distinct` - controls how NULL values are treated in unique indexes
+
+    ```
+    Index(
+        "idx_name",
+        table.c.column,
+        unique=True,
+        auroradsql_nulls_not_distinct=True
+    )
+
+    # Generated SQL
+    CREATE UNIQUE INDEX idx_name ON table (column) NULLS NOT DISTINCT
+
+    ```
+
+    ### Index Interface Limitation
+
+  - `NULLS FIRST | LAST` - SQLalchemy's Index() interface does not have a way to pass in the sort order of null and non-null columns. (Default: `NULLS LAST`). If `NULLS FIRST` is required, please refer to the syntax as specified in [Asynchronous indexes in Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/working-with-create-index-async.html) and execute the corresponding SQL query directly in SQLAlchemy.
+
+- Foreign Keys: DSQL does not support foreign key constraints. The dialect disables foreign key creation. Note that referential integrity must be maintained at the application level.
+- Column Metadata: The dialect fixes an issue related to "datatype json not supported" when calling SQLAlchemy's metadata() API.
+
 ## Integration Tests
 
 The following libraries are required to run the integration tests:
@@ -72,8 +147,15 @@ The following libraries are required to run the integration tests:
 To run the test use the following:
 
 ```
-pip install '.[test,psycopg]' # add psycopg2 if testing via psycopg2
+# Clone the entire repository
+git clone https://github.com/awslabs/aurora-dsql-sqlalchemy.git
+cd aurora-dsql-sqlalchemy
+
+# Download the Amazon root certificate from the official trust store:
 wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
+
+pip install '.[test,psycopg]' # add psycopg2 if testing via psycopg2
+
 export CLUSTER_ENDPOINT=<YOUR_CLUSTER_HOSTNAME>
 export CLUSTER_USER=admin
 export REGION=us-east-1
