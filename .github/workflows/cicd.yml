@@ -85,3 +85,14 @@ jobs:
           wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           pytest -v test/
+
+      - name: Run integration tests for SQL Alchemy Pet Clinic Example
+        env:
+          CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
+          REGION: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_REGION }}
+          CLUSTER_USER: admin
+        run: |
+          source sqlalchemy-integ/bin/activate 
+          wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
+          echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
+          pytest -v examples/pet-clinic-app/test/
