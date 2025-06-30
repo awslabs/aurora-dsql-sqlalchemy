@@ -9,18 +9,18 @@ from sqlalchemy.testing import engines
 # Register your dialect
 registry.register(
     "auroradsql",
-    "auroradsql_sqlalchemy.psycopg2",
+    "aurora_dsql_sqlalchemy.psycopg2",
     "AuroraDSQLDialect_psycopg2",
 )
 registry.register(
     "auroradsql.psycopg2",
-    "auroradsql_sqlalchemy.psycopg2",
+    "aurora_dsql_sqlalchemy.psycopg2",
     "AuroraDSQLDialect_psycopg2",
 )
 
 registry.register(
     "auroradsql.psycopg",
-    "auroradsql_sqlalchemy.psycopg",
+    "aurora_dsql_sqlalchemy.psycopg",
     "AuroraDSQLDialect_psycopg",
 )
 
