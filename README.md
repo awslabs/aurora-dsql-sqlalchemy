@@ -77,7 +77,7 @@ engine = create_engine(url)
 The connection string "auroradsql+psycopg" specifies to use the `auroradsql` dialect with the driver `psycopg` (psycopg3)
 To use the driver `psycopg2` , change the connection string to "auroradsql+psycopg2".
 
-Note: Each connection has a maximum duration limit. See the `Maximum connection duration` time limit in the [Database limits in Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/CHAP_quotas.html#SECTION_database-limits) table.
+Note: Each connection has a maximum duration limit. See the `Maximum connection duration` time limit in the [Cluster quotas and database limits in Amazon Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/CHAP_quotas.html) page.
 
 # Best Practices
 
