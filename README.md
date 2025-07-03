@@ -19,21 +19,6 @@ psycopg (psycopg3)
 
 ## Installation
 
-### Install the packages directly from the repository:
-
-[TODO] to be removed once this package is pushed to pypi
-
-```
-pip install .
-
-# driver installation
-pip install '.[psycopg2]'
-
-# psycopg (psycopg3)
-pip install '.[psycopg]'
-
-```
-
 Install the packages
 
 ```
