@@ -88,8 +88,7 @@ source .venv/bin/activate  # Linux, macOS
 pip install "psycopg2-binary>=2.9"
 pip install "sqlalchemy"
 pip install "boto3>=1.35.74"
-pip install ../../ # temporary way to install dialect from the repo directly
-#pip install "aurora-dsql-sqlalchemy" # TODO enable this once the dialect is published
+pip install "aurora-dsql-sqlalchemy"
 ```
 
 ### Run the code
