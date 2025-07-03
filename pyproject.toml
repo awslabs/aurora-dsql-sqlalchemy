@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aurora-dsql-sqlalchemy"
+version = "1.0.0"
+requires-python = ">=3.9"
+dependencies = [
+    "sqlalchemy>=2.0.0"
+]
+
+[project.urls]
+Repository = "https://github.com/awslabs/aurora-dsql-sqlalchemy"
+
+[project.optional-dependencies]
+test = ["pytest", "boto3", "pytest-cov", "ruff"]
+psycopg2 = ["psycopg2-binary>=2.9.0"]
+psycopg = ["psycopg>=3.2.0"]
+
+[project.entry-points."sqlalchemy.dialects"]
+# The default dialect uses psycopg (psycopg3) 
+auroradsql = "aurora_dsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg"
+"auroradsql.psycopg2" = "aurora_dsql_sqlalchemy.psycopg2:AuroraDSQLDialect_psycopg2"
+# Note: psyscopg (psycopg3) 
+"auroradsql.psycopg" = "aurora_dsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg" 
+
+[tool.setuptools]
+packages = ["aurora_dsql_sqlalchemy"]
+
+[tool.pytest.ini_options]
+addopts = "-v  -r chars -s" 
+python_files = ["test/*test_*.py"]
+testpaths = ["test"]
+
+[tool.ruff]
+target-version = "py39"
+line-length = 88
+lint.select = ["E", "F", "I"]
+lint.ignore = []
+exclude = [
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".tox",
+    ".venv",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "sqlalchemy-integ",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
