@@ -13,7 +13,7 @@ with SQLAlchemy. To run the included example please refer to the [sample README]
 
 ## Prerequisites
 
-- Python 3.9 or higher
+- Python 3.10 or higher
 - SQLAlchemy 2.0.0 or higher
 - One of the following drivers:
     - psycopg 3.2.0 or higher

@@ -50,7 +50,7 @@ connections should be used where possible to ensure data security during transmi
   configured as described in the
   [Globally configuring AWS SDKs and tools](https://docs.aws.amazon.com/credref/latest/refdocs/creds-config-files.html)
   guide.
-- [Python 3.9.0](https://www.python.org/) or later.
+- [Python 3.10.0](https://www.python.org/) or later.
 - You must have an Aurora DSQL cluster. For information about creating an Aurora DSQL cluster, see the
   [Getting started with Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/getting-started.html)
   guide.

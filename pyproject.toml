@@ -4,10 +4,23 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aurora-dsql-sqlalchemy"
-version = "1.0.0"
-requires-python = ">=3.9"
+version = "1.0.1"
+description = "Amazon Aurora DSQL dialect for SQLAlchemy"
+authors = [{name = "Amazon Web Services"}]
+license = {text = "Apache License 2.0"}
+readme = "README.md"
+requires-python = ">=3.10"
 dependencies = [
     "sqlalchemy>=2.0.0"
+]
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 
 [project.urls]
