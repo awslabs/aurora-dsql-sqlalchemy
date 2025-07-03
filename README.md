@@ -112,7 +112,6 @@ Column(
     Generated SQL output:
     ```sql
     CREATE UNIQUE INDEX idx_name ON table (column) NULLS NOT DISTINCT
-
     ```
 
 - **Index Interface Limitation**: `NULLS FIRST | LAST` - SQLalchemy's Index() interface does not have a way to pass in the sort order of null and non-null columns. (Default: `NULLS LAST`). If `NULLS FIRST` is required, please refer to the syntax as specified in [Asynchronous indexes in Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/working-with-create-index-async.html) and execute the corresponding SQL query directly in SQLAlchemy.
