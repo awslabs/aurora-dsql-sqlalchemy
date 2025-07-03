@@ -1,4 +1,4 @@
-# SQLAlchemy with Aurora DSQL
+# Amazon Aurora DSQL with SQLAlchemy
 
 ## Overview
 

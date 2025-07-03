@@ -1,18 +1,23 @@
 # Amazon Aurora DSQL dialect for SQLAlchemy
 
-Amazon Aurora DSQL dialect for SQLAlchemy enables Python applications to connect to and interact with Aurora DSQL databases using the SQLAlchemy ORM.
+## Introduction
+
+The Aurora DSQL dialect for SQLAlchemy provides integration between SQLAlchemy ORM and Aurora DSQL. This dialect enables
+Python applications to leverage SQLAlchemy's powerful object-relational mapping capabilities while taking advantage of
+Aurora DSQL's distributed architecture and high availability.
+
+## Sample Application
+
+There is an included sample application in [examples/pet-clinic-app](https://github.com/awslabs/aurora-dsql-sqlalchemy/tree/main/examples/pet-clinic-app) that shows how to use Aurora DSQL
+with SQLAlchemy. To run the included example please refer to the [sample README](https://github.com/awslabs/aurora-dsql-sqlalchemy/tree/main/examples/pet-clinic-app#readme).
 
 ## Prerequisites
 
 - Python 3.9 or higher
 - SQLAlchemy 2.0.0 or higher
-
-### Drivers
-
-- psycopg2
-    - psycopg2-binary 2.9.0 or higher
-- psycopg (psycopg3)
+- One of the following drivers:
     - psycopg 3.2.0 or higher
+    - psycopg2 2.9.0 or higher
 
 ## Installation
 
@@ -21,16 +26,16 @@ Install the packages using the commands below:
 ```bash
 pip install aurora-dsql-sqlalchemy
 
-# driver installation
-pip install psycopg2-binary
-
-# psycopg (psycopg3)
+# driver installation (in case you opt for psycopg)
 pip install psycopg-binary
+
+# driver installation (in case you opt for psycopg2)
+pip install psycopg2-binary
 ```
 
 ## Usage
 
-After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's create_engine:
+After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's `create_engine`:
 
 ```python
 from sqlalchemy import create_engine
@@ -60,7 +65,7 @@ To use the driver `psycopg2`, change the connection string to `"auroradsql+psyco
 
 **Note:** Each connection has a maximum duration limit. See the `Maximum connection duration` time limit in the [Cluster quotas and database limits in Amazon Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/CHAP_quotas.html) page.
 
-# Best Practices
+## Best Practices
 
 ### Primary Key Generation
 
@@ -77,7 +82,7 @@ Column(
 
 `gen_random_uuid()` returns an UUID version 4 as the default value.
 
-# Dialect Features and Limitations
+## Dialect Features and Limitations
 
 - **Column Metadata**: The dialect fixes an issue related to `"datatype json not supported"` when calling SQLAlchemy's metadata() API.
 - **Foreign Keys**: Aurora DSQL does not support foreign key constraints. The dialect disables these constraints, but be aware that referential integrity must be maintained at the application level.
@@ -117,35 +122,13 @@ Column(
 - **Index Interface Limitation**: `NULLS FIRST | LAST` - SQLalchemy's Index() interface does not have a way to pass in the sort order of null and non-null columns. (Default: `NULLS LAST`). If `NULLS FIRST` is required, please refer to the syntax as specified in [Asynchronous indexes in Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/working-with-create-index-async.html) and execute the corresponding SQL query directly in SQLAlchemy.
 - **Psycopg (psycopg3) support**: When connecting to DSQL using the default postgresql dialect with psycopg, an unsupported `SAVEPOINT` error occurs. The DSQL dialect addresses this issue by disabling the `SAVEPOINT` during connection.
 
-## Integration Tests
+## Developer instructions
 
-The following libraries are required to run the integration tests:
-
-- boto3
-- pytest
-
-To run the test use the following:
-
-```bash
-# Clone the entire repository
-git clone https://github.com/awslabs/aurora-dsql-sqlalchemy.git
-cd aurora-dsql-sqlalchemy
-
-# Download the Amazon root certificate from the official trust store:
-wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
-
-pip install '.[test,psycopg]' # add psycopg2 if testing via psycopg2
-
-export CLUSTER_ENDPOINT=<YOUR_CLUSTER_HOSTNAME>
-export CLUSTER_USER=admin
-export REGION=us-east-1
-export DRIVER=psycopg # use 'psycopg' for psycopg3 and 'psycopg2' for psycopg2
-pytest
-```
+Instructions on how to build and test the dialect are available in the [Developer Instructions](https://github.com/awslabs/aurora-dsql-sqlalchemy/tree/main/aurora_dsql_sqlalchemy#readme).
 
 ## Security
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+See [CONTRIBUTING](https://github.com/awslabs/aurora-dsql-sqlalchemy/blob/main/CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## License
 
