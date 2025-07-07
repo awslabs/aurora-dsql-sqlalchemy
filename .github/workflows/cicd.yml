@@ -21,6 +21,7 @@ jobs:
       matrix:
         # Run test for every python version we intend to support.
         version: ['3.10', '3.11', '3.12', '3.13']
+        driver: ['psycopg2', 'psycopg']
     permissions:
       id-token: write
       contents: read
@@ -67,34 +68,25 @@ jobs:
           source sqlalchemy-integ/bin/activate 
           ruff check
 
-      - name: Run integration tests for SQL Alchemy via psycopg2
+      - name: Run integration tests for SQL Alchemy
         env:
           CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
           REGION: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_REGION }}
           CLUSTER_USER: admin
-          DRIVER: psycopg2
+          DRIVER: ${{ matrix.driver }}
         run: |
           source sqlalchemy-integ/bin/activate 
           wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           pytest -v test/
 
-      - name: Run integration tests for SQL Alchemy via psycopg (psycopg3)
-        env:
-          CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
-          REGION: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_REGION }}
-          CLUSTER_USER: admin
-          DRIVER: psycopg
-        run: |
-          source sqlalchemy-integ/bin/activate 
-          echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
-          pytest -v test/
 
       - name: Run integration tests for SQL Alchemy Pet Clinic Example
         env:
           CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
           REGION: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_REGION }}
           CLUSTER_USER: admin
+          DRIVER: ${{ matrix.driver }}
         run: |
           source sqlalchemy-integ/bin/activate 
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH

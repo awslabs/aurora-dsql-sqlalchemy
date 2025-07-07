@@ -51,6 +51,9 @@ connections should be used where possible to ensure data security during transmi
   [Globally configuring AWS SDKs and tools](https://docs.aws.amazon.com/credref/latest/refdocs/creds-config-files.html)
   guide.
 - [Python 3.10.0](https://www.python.org/) or later.
+- One of the following drivers:
+  - psycopg 3.2.0 or higher
+  - psycopg2 2.9.0 or higher
 - You must have an Aurora DSQL cluster. For information about creating an Aurora DSQL cluster, see the
   [Getting started with Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/getting-started.html)
   guide.
@@ -85,10 +88,15 @@ source .venv/bin/activate  # Linux, macOS
 3. Install the required packages for running the examples:
 
 ```bash
-pip install "psycopg2-binary>=2.9"
 pip install "sqlalchemy"
 pip install "boto3>=1.35.74"
 pip install "aurora-dsql-sqlalchemy"
+
+# driver installation (in case you opt for psycopg)
+pip install psycopg-binary
+
+# driver installation (in case you opt for psycopg2)
+pip install psycopg2-binary
 ```
 
 ### Run the code
@@ -117,6 +125,9 @@ export CLUSTER_ENDPOINT="<your endpoint>"
 
 # e.g. "us-east-1"
 export REGION="<your region>"
+
+# e.g. "psycopg" for psycopg3 and "psycopg2" for psycopg2
+export DRIVER="psycopg" 
 ```
 
 Run the example:
@@ -151,11 +162,14 @@ def create_dsql_engine():
     region = os.environ.get("REGION", None)
     assert region is not None, "REGION environment variable is not set"
 
+    driver = os.environ.get("DRIVER", None)
+    assert driver is not None, "DRIVER environment variable is not set"
+
     client = boto3.client("dsql", region_name=region)
 
     # Create the URL, note that the password token is added when connections are created.
     url = URL.create(
-        "auroradsql+psycopg2",
+        f"auroradsql+{driver}",
         username=cluster_user,
         host=cluster_endpoint,
         database="postgres"
