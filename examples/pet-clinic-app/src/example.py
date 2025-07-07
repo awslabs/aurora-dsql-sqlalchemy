@@ -3,7 +3,6 @@ import os
 
 ## Dependencies for token generation
 import boto3
-import psycopg2.extensions
 
 ## Dependencies for Model class
 from sqlalchemy import Column, Date, String, create_engine, event, select
@@ -52,9 +51,18 @@ def create_dsql_engine():
         "sslrootcert": "./root.pem",
     }
 
-    # Use the more efficient connection method if it's supported.
-    if psycopg2.extensions.libpq_version() >= 170000:
-        connect_args["sslnegotiation"] = "direct"
+    if driver == "psycopg2":
+        import psycopg2.extensions
+
+        # Use the more efficient connection method if it's supported.
+        if psycopg2.extensions.libpq_version() >= 170000:
+            connect_args["sslnegotiation"] = "direct"
+
+    elif driver == "psycopg":
+        import psycopg
+
+        if psycopg.pq.version() >= 170000:
+            connect_args["sslnegotiation"] = "direct"
 
     # Create the engine
     engine = create_engine(url, connect_args=connect_args, pool_size=5, max_overflow=10)
