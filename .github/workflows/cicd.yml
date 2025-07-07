@@ -16,6 +16,11 @@ on:
 jobs:
   dialect-test:
     runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 1 # limit to 1 since we have 1 dsql cluster
+      matrix:
+        # Run test for every python version we intend to support.
+        version: ['3.10', '3.11', '3.12', '3.13']
     permissions:
       id-token: write
       contents: read
@@ -28,16 +33,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.version }}
         uses: actions/setup-python@v5
         with:
-          python-version: "3.10"
+          python-version: ${{ matrix.version }}
 
       - name: Cache pip packages
         uses: actions/cache@v4
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.version }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
@@ -82,7 +87,6 @@ jobs:
           DRIVER: psycopg
         run: |
           source sqlalchemy-integ/bin/activate 
-          wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           pytest -v test/
 
@@ -93,6 +97,5 @@ jobs:
           CLUSTER_USER: admin
         run: |
           source sqlalchemy-integ/bin/activate 
-          wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           pytest -v examples/pet-clinic-app/test/
