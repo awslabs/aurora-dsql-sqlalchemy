@@ -20,7 +20,7 @@ jobs:
       max-parallel: 1 # limit to 1 since we have 1 dsql cluster
       matrix:
         # Run test for every python version we intend to support.
-        version: ['3.9', '3.10', '3.11', '3.12', '3.13']
+        version: ['3.10', '3.11', '3.12', '3.13']
     permissions:
       id-token: write
       contents: read
