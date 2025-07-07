@@ -3,7 +3,6 @@ import os
 
 ## Dependencies for token generation
 import boto3
-import psycopg2.extensions
 
 ## Dependencies for Model class
 from sqlalchemy import Column, Date, String, create_engine, event, select
@@ -34,11 +33,14 @@ def create_dsql_engine():
     region = os.environ.get("REGION", None)
     assert region is not None, "REGION environment variable is not set"
 
+    driver = os.environ.get("DRIVER", None)
+    assert driver is not None, "DRIVER environment variable is not set"
+
     client = boto3.client("dsql", region_name=region)
 
     # Create the URL, note that the password token is added when connections are created
     url = URL.create(
-        "auroradsql+psycopg2",
+        f"auroradsql+{driver}",
         username=cluster_user,
         host=cluster_endpoint,
         database="postgres",
@@ -49,10 +51,19 @@ def create_dsql_engine():
         "sslrootcert": "./root.pem",
     }
 
-    # Use the more efficient connection method if it's supported.
-    if psycopg2.extensions.libpq_version() >= 170000:
-        connect_args["sslnegotiation"] = "direct"
+    if driver == "psycopg2":
+        import psycopg2.extensions
 
+        libpq_version = psycopg2.extensions.libpq_version()
+
+    elif driver == "psycopg":
+        import psycopg
+
+        libpq_version = psycopg.pq.version()
+
+    # Use the more efficient connection method if it's supported.
+    if libpq_version >= 170000:
+        connect_args["sslnegotiation"] = "direct"
     # Create the engine
     engine = create_engine(url, connect_args=connect_args, pool_size=5, max_overflow=10)
 
