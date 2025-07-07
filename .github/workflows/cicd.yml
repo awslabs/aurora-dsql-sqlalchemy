@@ -92,10 +92,10 @@ jobs:
 
       - name: Run integration tests for SQL Alchemy Pet Clinic Example
         env:
-          source sqlalchemy-integ/bin/activate 
           CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
           REGION: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_REGION }}
           CLUSTER_USER: admin
         run: |
+          source sqlalchemy-integ/bin/activate 
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           pytest -v examples/pet-clinic-app/test/
