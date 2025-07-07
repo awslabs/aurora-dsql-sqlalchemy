@@ -59,7 +59,7 @@ jobs:
           source sqlalchemy-integ/bin/activate
           pip install --upgrade pip
           pip install .
-          pip install '.[test,psycopg2,psycopg]'
+          pip install '.[test,${{ matrix.driver }}]'
           python3 -c "import boto3; print(boto3.__version__)"
           pip list
 
@@ -68,6 +68,9 @@ jobs:
           source sqlalchemy-integ/bin/activate 
           ruff check
 
+      - name: Download Amazon Root Cert for SSL 
+        run: wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
+    
       - name: Run integration tests for SQL Alchemy
         env:
           CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
@@ -76,7 +79,6 @@ jobs:
           DRIVER: ${{ matrix.driver }}
         run: |
           source sqlalchemy-integ/bin/activate 
-          wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
           pytest -v test/
 
