@@ -1,5 +1,7 @@
 # Amazon Aurora DSQL dialect for SQLAlchemy
 
+<a href="https://pypi.org/project/aurora-dsql-sqlalchemy"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/aurora-dsql-sqlalchemy?style=for-the-badge"></a>
+
 ## Introduction
 
 The Aurora DSQL dialect for SQLAlchemy provides integration between SQLAlchemy ORM and Aurora DSQL. This dialect enables
