@@ -18,8 +18,8 @@ with SQLAlchemy. To run the included example please refer to the [sample README]
 - Python 3.10 or higher
 - SQLAlchemy 2.0.0 or higher
 - One of the following drivers:
-    - psycopg 3.2.0 or higher
-    - psycopg2 2.9.0 or higher
+  - psycopg 3.2.0 or higher
+  - psycopg2 2.9.0 or higher
 
 ## Installation
 
@@ -29,7 +29,8 @@ Install the packages using the commands below:
 pip install aurora-dsql-sqlalchemy
 
 # driver installation (in case you opt for psycopg)
-pip install psycopg-binary
+# DO NOT use pip install psycopg-binary
+pip install "psycopg[binary]"
 
 # driver installation (in case you opt for psycopg2)
 pip install psycopg2-binary
@@ -101,7 +102,9 @@ Column(
         auroradsql_include=['name', 'email']
     )
     ```
+
     Generated SQL output:
+
     ```sql
     CREATE INDEX ASYNC include_index ON table (id) INCLUDE (name, email)
     ```
@@ -116,7 +119,9 @@ Column(
         auroradsql_nulls_not_distinct=True
     )
     ```
+
     Generated SQL output:
+
     ```sql
     CREATE UNIQUE INDEX idx_name ON table (column) NULLS NOT DISTINCT
     ```

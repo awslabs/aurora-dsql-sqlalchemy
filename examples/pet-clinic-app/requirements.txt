@@ -1,5 +1,6 @@
 sqlalchemy
 psycopg2-binary>=2.9
+psycopg[binary]>=2.9
 pytest>=8
 boto3>=1.35.74
 aurora-dsql-sqlalchemy
