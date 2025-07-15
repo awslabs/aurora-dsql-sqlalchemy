@@ -93,7 +93,8 @@ pip install "boto3>=1.35.74"
 pip install "aurora-dsql-sqlalchemy"
 
 # driver installation (in case you opt for psycopg)
-pip install psycopg-binary
+# DO NOT use pip install psycopg-binary
+pip install "psycopg[binary]"
 
 # driver installation (in case you opt for psycopg2)
 pip install psycopg2-binary
@@ -127,7 +128,7 @@ export CLUSTER_ENDPOINT="<your endpoint>"
 export REGION="<your region>"
 
 # e.g. "psycopg" for psycopg3 and "psycopg2" for psycopg2
-export DRIVER="psycopg" 
+export DRIVER="psycopg"
 ```
 
 Run the example:

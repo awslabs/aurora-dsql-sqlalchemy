@@ -29,7 +29,7 @@ Repository = "https://github.com/awslabs/aurora-dsql-sqlalchemy"
 [project.optional-dependencies]
 test = ["pytest", "boto3", "pytest-cov", "ruff"]
 psycopg2 = ["psycopg2-binary>=2.9.0"]
-psycopg = ["psycopg>=3.2.0"]
+psycopg = ["psycopg[binary]>=3.2.0"]
 
 [project.entry-points."sqlalchemy.dialects"]
 # The default dialect uses psycopg (psycopg3) 
