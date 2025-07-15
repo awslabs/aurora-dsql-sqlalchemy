@@ -76,28 +76,10 @@ cd aurora-dsql-sqlalchemy/examples/pet-clinic-app
 wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
 ```
 
-2. Create and activate a Python virtual environment:
+2. Install the required packages for running the examples:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate  # Linux, macOS
-# or
-.venv\Scripts\activate     # Windows
-```
-
-3. Install the required packages for running the examples:
-
-```bash
-pip install "sqlalchemy"
-pip install "boto3>=1.35.74"
-pip install "aurora-dsql-sqlalchemy"
-
-# driver installation (in case you opt for psycopg)
-# DO NOT use pip install psycopg-binary
-pip install "psycopg[binary]"
-
-# driver installation (in case you opt for psycopg2)
-pip install psycopg2-binary
+pip install '.[test,psycopg]'  # add psycopg2 if testing via psycopg2
 ```
 
 ### Run the code
