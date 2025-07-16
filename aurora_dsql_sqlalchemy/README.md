@@ -17,7 +17,7 @@ cd aurora-dsql-sqlalchemy
 # Download the Amazon root certificate from the official trust store:
 wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
 
-pip install '.[test,psycopg]' # add psycopg2 if testing via psycopg2
+pip install '.[test,psycopg]' # use psycopg2 if testing via psycopg2
 
 export CLUSTER_ENDPOINT=<YOUR_CLUSTER_HOSTNAME>
 export CLUSTER_USER=admin
