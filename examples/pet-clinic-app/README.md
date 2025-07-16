@@ -79,7 +79,7 @@ wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
 2. Install the required packages for running the examples:
 
 ```bash
-pip install '.[test,psycopg]'  # add psycopg2 if testing via psycopg2
+pip install '.[test,psycopg]'  # use psycopg2 if testing via psycopg2
 ```
 
 ### Run the code
