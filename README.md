@@ -50,7 +50,7 @@ from sqlalchemy.engine.url import URL
 
 url = URL.create(
     "auroradsql+psycopg",
-    username=admin,
+    username=<CLUSTER_USER>,
     host=<CLUSTER_END_POINT>,
     database='postgres',
     query={
