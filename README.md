@@ -36,7 +36,11 @@ pip install "psycopg[binary]"
 pip install psycopg2-binary
 ```
 
-## Usage
+## Sample Application
+
+A sample application is provided in [examples/pet-clinic-app](https://github.com/awslabs/aurora-dsql-sqlalchemy/tree/main/examples/pet-clinic-app) that shows how to use Aurora DSQL with SQLAlchemy. To run the included example please refer to the [sample README](https://github.com/awslabs/aurora-dsql-sqlalchemy/blob/main/examples/pet-clinic-app/README.md).
+
+## Dialect Configuration
 
 After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's `create_engine`:
 
@@ -48,7 +52,6 @@ url = URL.create(
     "auroradsql+psycopg",
     username=admin,
     host=<CLUSTER_END_POINT>,
-    password=<CLUSTER_TOKEN>,
     database='postgres',
     query={
         # (optional) If sslmode is 'verify-full' then use sslrootcert
