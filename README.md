@@ -40,7 +40,7 @@ pip install psycopg2-binary
 
 After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's `create_engine`:
 
-The connection string `"auroradsql+psycopg"` specifies to use the `auroradsql` dialect with the driver `psycopg` (psycopg3).
+The connection parameter `auroradsql+psycopg` specifies to use the `auroradsql` dialect with the driver `psycopg` (psycopg3).
 To use the driver `psycopg2`, change the connection string to `"auroradsql+psycopg2"`.
 
 ```python
