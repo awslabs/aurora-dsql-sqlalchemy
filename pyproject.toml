@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aurora-dsql-sqlalchemy"
-version = "1.0.1"
+version = "1.0.2"
 description = "Amazon Aurora DSQL dialect for SQLAlchemy"
 authors = [{name = "Amazon Web Services"}]
 license = {text = "Apache License 2.0"}
