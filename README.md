@@ -51,7 +51,7 @@ from sqlalchemy.engine.url import URL
 url = URL.create(
     "auroradsql+psycopg",
     username=<CLUSTER_USER>,
-    host=<CLUSTER_END_POINT>,
+    host=<CLUSTER_ENDPOINT>,
     database='postgres',
     query={
         # (optional) If sslmode is 'verify-full' then use sslrootcert
