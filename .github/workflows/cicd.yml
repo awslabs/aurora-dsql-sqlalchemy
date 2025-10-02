@@ -1,5 +1,7 @@
 name: SQLAlchemy Dialect integration tests
 
+permissions: {}
+
 on:
   push:
     branches: [main]
@@ -23,12 +25,7 @@ jobs:
         version: ['3.10', '3.11', '3.12', '3.13']
         driver: ['psycopg2', 'psycopg']
     permissions:
-      id-token: write
-      contents: read
-      # Explicitly set permissions, following the principle of least privilege
-      actions: read
-      checks: write
-      pull-requests: write
+      id-token: write # required by aws-actions/configure-aws-credentials
 
     steps:
       - name: Checkout code
