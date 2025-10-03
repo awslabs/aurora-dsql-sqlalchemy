@@ -1,4 +1,7 @@
 name: Publish Amazon Aurora DSQL dialect for SQLAlchemy Distribution to PyPI
+
+permissions: {}
+
 on:
   release:
     types: [published]
@@ -39,7 +42,7 @@ jobs:
       url: https://pypi.org/p/aurora-dsql-sqlalchemy
 
     permissions:
-      id-token: write  # IMPORTANT: mandatory for trusted publishing
+      id-token: write # required by pypa/gh-action-pypi-publish
 
     steps:
     - name: Download all the dists
