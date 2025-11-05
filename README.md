@@ -1,6 +1,9 @@
 # Amazon Aurora DSQL dialect for SQLAlchemy
 
-<a href="https://pypi.org/project/aurora-dsql-sqlalchemy"><img alt="PyPI - Version" src="https://img.shields.io/pypi/v/aurora-dsql-sqlalchemy?style=for-the-badge"></a>
+[![GitHub](https://img.shields.io/badge/github-awslabs/aurora--dsql--sqlalchemy-blue?logo=github)](https://github.com/awslabs/aurora-dsql-sqlalchemy)
+[![License](https://img.shields.io/badge/license-Apache--2.0-brightgreen)](<[LICENSE](https://github.com/awslabs/aurora-dsql-sqlalchemy/blob/main/LICENSE)>)
+[![PyPI - Version](https://img.shields.io/pypi/v/aurora-dsql-sqlalchemy)](https://pypi.org/project/aurora-dsql-sqlalchemy)
+[![Discord chat](https://img.shields.io/discord/500028886025895936.svg?logo=discord)](https://discord.com/invite/nEF6ksFWru)
 
 ## Introduction
 
