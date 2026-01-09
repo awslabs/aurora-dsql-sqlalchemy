@@ -41,36 +41,35 @@ pip install psycopg2-binary
 
 ## Dialect Configuration
 
-After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's `create_engine` with the Aurora DSQL Python Connector.
-
-The connection parameter `auroradsql+psycopg` specifies to use the `auroradsql` dialect with the driver `psycopg` (psycopg3).
-To use the driver `psycopg2`, change the connection parameter to `auroradsql+psycopg2`.
+After installation, you can connect to an Aurora DSQL cluster using the `create_dsql_engine` helper function:
 
 ```python
-import aurora_dsql_psycopg as dsql_connector  # or aurora_dsql_psycopg2
-from sqlalchemy import create_engine
-from sqlalchemy.engine.url import URL
+from aurora_dsql_sqlalchemy import create_dsql_engine
 
-# Create a connection factory using the connector
-# The connector handles IAM authentication automatically
-def creator():
-    return dsql_connector.DSQLConnection.connect(  # use dsql_connector.connect() for psycopg2
-        host="<CLUSTER_ENDPOINT>",
-        user="<CLUSTER_USER>",
-        dbname="postgres",
-        sslmode="verify-full",
-        sslrootcert="<ROOT_CERT_PATH>",  # or "system" to use system CA store
-        application_name="sqlalchemy",
-    )
-
-url = URL.create(
-    "auroradsql+psycopg",  # or "auroradsql+psycopg2"
-    username="<CLUSTER_USER>",
+engine = create_dsql_engine(
     host="<CLUSTER_ENDPOINT>",
-    database="postgres",
+    user="<CLUSTER_USER>",
+    driver="psycopg",  # or "psycopg2"
 )
+```
 
-engine = create_engine(url, creator=creator, pool_size=5, max_overflow=10)
+The helper function handles:
+- IAM authentication via the Aurora DSQL Python Connector
+- SSL configuration with certificate verification
+- Direct SSL negotiation optimization (when supported by libpq >= 17)
+- Connection pooling with sensible defaults
+
+For more control, you can customize additional parameters:
+
+```python
+engine = create_dsql_engine(
+    host="<CLUSTER_ENDPOINT>",
+    user="<CLUSTER_USER>",
+    driver="psycopg",
+    sslrootcert="./root.pem",  # or "system" to use system CA store
+    pool_size=10,
+    max_overflow=20,
+)
 ```
 
 **Note:** Each connection has a maximum duration limit. See the `Maximum connection duration` time limit in the [Cluster quotas and database limits in Amazon Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/CHAP_quotas.html) page.

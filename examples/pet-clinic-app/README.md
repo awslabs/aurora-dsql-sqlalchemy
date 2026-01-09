@@ -77,7 +77,7 @@ wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
 2. Install the required packages for running the examples:
 
 ```bash
-pip install '.[test,psycopg]'  # use psycopg2 if testing via psycopg2
+pip install '.[run,psycopg]'  # use psycopg2 if testing via psycopg2
 ```
 
 ### Run the code
@@ -120,17 +120,18 @@ The example contains comments explaining the code and the operations being perfo
 
 ### Connect to an Aurora DSQL cluster
 
-The example below shows how to create an Aurora DSQL engine in SQLAlchemy using the Python connector. The connector handles IAM token generation automatically, simplifying the connection setup.
+The example below shows how to create an Aurora DSQL engine using the `create_dsql_engine` helper function. The helper handles IAM token generation automatically, simplifying the connection setup.
 
 ```py
 import os
-from sqlalchemy import create_engine, event
-from sqlalchemy.engine import URL
+from sqlalchemy import event
+
+from aurora_dsql_sqlalchemy import create_dsql_engine
 
 ADMIN = "admin"
 NON_ADMIN_SCHEMA = "myschema"
 
-def create_dsql_engine():
+def create_engine_for_example():
     cluster_user = os.environ.get("CLUSTER_USER", None)
     assert cluster_user is not None, "CLUSTER_USER environment variable is not set"
 
@@ -140,49 +141,13 @@ def create_dsql_engine():
     driver = os.environ.get("DRIVER", None)
     assert driver is not None, "DRIVER environment variable is not set"
 
-    # Connection params are the same for both drivers
-    conn_params = {
-        "host": cluster_endpoint,
-        "user": cluster_user,
-        "dbname": "postgres",
-        "sslmode": "verify-full",
-        "sslrootcert": "./root.pem",
-        "application_name": "sqlalchemy",
-    }
-
-    # Import the appropriate connector based on driver
-    if driver == "psycopg":
-        import aurora_dsql_psycopg as dsql_connector
-        from psycopg import pq
-
-        # Use the more efficient connection method if it's supported
-        if pq.version() >= 170000:
-            conn_params["sslnegotiation"] = "direct"
-
-        def creator():
-            return dsql_connector.DSQLConnection.connect(**conn_params)
-    else:
-        import aurora_dsql_psycopg2 as dsql_connector
-        import psycopg2.extensions
-
-        # Use the more efficient connection method if it's supported
-        if psycopg2.extensions.libpq_version() >= 170000:
-            conn_params["sslnegotiation"] = "direct"
-
-        def creator():
-            return dsql_connector.connect(**conn_params)
-
-    # Create the URL for dialect registration
-    url = URL.create(
-        f"auroradsql+{driver}",
-        username=cluster_user,
-        host=cluster_endpoint,
-        database="postgres",
-    )
-
-    # Create the engine using creator function
+    # Create the engine using the helper function
     # The connector handles IAM authentication automatically
-    engine = create_engine(url, creator=creator, pool_size=5, max_overflow=10)
+    engine = create_dsql_engine(
+        host=cluster_endpoint,
+        user=cluster_user,
+        driver=driver,
+    )
 
     # If we are using the non-admin user, set the search path to 'myschema'
     @event.listens_for(engine, "connect", insert=True)

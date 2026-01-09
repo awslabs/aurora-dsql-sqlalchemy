@@ -1,17 +1,12 @@
-## Dependencies for engine creation
 import os
 
-## Dependencies for Model class
-from sqlalchemy import Column, Date, String, create_engine, event, select
+from sqlalchemy import Column, Date, String, event, select
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.engine import URL
-
-## Dependencies for retry statement
 from sqlalchemy.exc import SQLAlchemyError
-
-## Dependencies for object creation (inserts)
 from sqlalchemy.orm import DeclarativeBase, Session, relationship
 from sqlalchemy.sql import text
+
+from aurora_dsql_sqlalchemy import create_dsql_engine as _create_dsql_engine
 
 ADMIN = "admin"
 NON_ADMIN_SCHEMA = "myschema"
@@ -30,49 +25,13 @@ def create_dsql_engine():
     driver = os.environ.get("DRIVER", None)
     assert driver is not None, "DRIVER environment variable is not set"
 
-    # Connection params are the same for both drivers
-    conn_params = {
-        "host": cluster_endpoint,
-        "user": cluster_user,
-        "dbname": "postgres",
-        "sslmode": "verify-full",
-        "sslrootcert": "./root.pem",
-        "application_name": "sqlalchemy",
-    }
-
-    # Import the appropriate connector based on driver
-    if driver == "psycopg":
-        import aurora_dsql_psycopg as dsql_connector
-        from psycopg import pq
-
-        # Use the more efficient connection method if it's supported
-        if pq.version() >= 170000:
-            conn_params["sslnegotiation"] = "direct"
-
-        def creator():
-            return dsql_connector.DSQLConnection.connect(**conn_params)
-    else:
-        import aurora_dsql_psycopg2 as dsql_connector
-        import psycopg2.extensions
-
-        # Use the more efficient connection method if it's supported
-        if psycopg2.extensions.libpq_version() >= 170000:
-            conn_params["sslnegotiation"] = "direct"
-
-        def creator():
-            return dsql_connector.connect(**conn_params)
-
-    # Create the URL for dialect registration
-    url = URL.create(
-        f"auroradsql+{driver}",
-        username=cluster_user,
-        host=cluster_endpoint,
-        database="postgres",
-    )
-
-    # Create the engine using creator function
+    # Create the engine using the helper function
     # The connector handles IAM authentication automatically
-    engine = create_engine(url, creator=creator, pool_size=5, max_overflow=10)
+    engine = _create_dsql_engine(
+        host=cluster_endpoint,
+        user=cluster_user,
+        driver=driver,
+    )
 
     # If we are using the non-admin user, we need to set the search path to use
     # 'myschema' instead of public whenever a connection is created.

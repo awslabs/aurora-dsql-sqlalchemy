@@ -9,6 +9,7 @@ pythonpath = [
 testpaths = ["test"]
 
 [project.optional-dependencies]
-test = ["sqlalchemy", "pytest", "aurora-dsql-sqlalchemy", "aurora-dsql-python-connector"]
+# Dependencies required to run the example and tests
+run = ["aurora-dsql-sqlalchemy", "pytest"]
 psycopg2 = ["psycopg2-binary>=2.9.0"]
 psycopg = ["psycopg[binary]>=3.2.0"]
