@@ -2,8 +2,8 @@
 
 ## Overview
 
-This code example demonstrates how to use SQLAlchemy with Amazon Aurora DSQL. The example shows you how to
-connect to an Aurora DSQL cluster with SQLAlchemy using Psycopg2, create entities, and read and write to those entity tables.
+This code example demonstrates how to use SQLAlchemy with the Aurora DSQL Python Connector. The example shows you how to
+connect to an Aurora DSQL cluster with SQLAlchemy using the connector for automatic IAM authentication, create entities, and read and write to those entity tables.
 
 Aurora DSQL is a distributed SQL database service that provides high availability and scalability for
 your PostgreSQL-compatible applications. SQLAlchemy is a popular object-relational mapping framework for Python that allows
@@ -11,14 +11,12 @@ you to persist Python objects to a database while abstracting the database inter
 
 ## About the code example
 
-The example demonstrates a flexible connection approach that works for both admin and non-admin users:
+The example uses the `aurora-dsql-python-connector` which handles IAM authentication automatically. It demonstrates a flexible connection approach that works for both admin and non-admin users:
 
-- When connecting as an **admin user**, the example uses the `public` schema and generates an admin authentication
-  token.
-- When connecting as a **non-admin user**, the example uses a custom `myschema` schema and generates a standard
-  authentication token.
+- When connecting as an **admin user**, the example uses the `public` schema
+- When connecting as a **non-admin user**, the example uses a custom `myschema` schema
 
-The code automatically detects the user type and adjusts its behavior accordingly.
+The connector automatically detects the user type and generates the appropriate authentication token.
 
 ## ⚠️ Important
 
@@ -106,9 +104,6 @@ export CLUSTER_USER="<your user>"
 # e.g. "foo0bar1baz2quux3quuux4.dsql.us-east-1.on.aws"
 export CLUSTER_ENDPOINT="<your endpoint>"
 
-# e.g. "us-east-1"
-export REGION="<your region>"
-
 # e.g. "psycopg" for psycopg3 and "psycopg2" for psycopg2
 export DRIVER="psycopg"
 ```
@@ -125,15 +120,15 @@ The example contains comments explaining the code and the operations being perfo
 
 ### Connect to an Aurora DSQL cluster
 
-The example below shows how to create an Aurora DSQL engine in SQLAlchemy and connect to a cluster. It handles token generation,
-creating a new token for each connection to DSQL. This ensures that the token is always valid. This is done using SQLAlchemy's
-event annotation to create a listener to the engine that creates a new token when connections are created.
+The example below shows how to create an Aurora DSQL engine in SQLAlchemy using the Python connector. The connector handles IAM token generation automatically, simplifying the connection setup.
 
 ```py
 import os
-import boto3
-from sqlalchemy import create_engine, select, event
+from sqlalchemy import create_engine, event
 from sqlalchemy.engine import URL
+
+ADMIN = "admin"
+NON_ADMIN_SCHEMA = "myschema"
 
 def create_dsql_engine():
     cluster_user = os.environ.get("CLUSTER_USER", None)
@@ -142,42 +137,58 @@ def create_dsql_engine():
     cluster_endpoint = os.environ.get("CLUSTER_ENDPOINT", None)
     assert cluster_endpoint is not None, "CLUSTER_ENDPOINT environment variable is not set"
 
-    region = os.environ.get("REGION", None)
-    assert region is not None, "REGION environment variable is not set"
-
     driver = os.environ.get("DRIVER", None)
     assert driver is not None, "DRIVER environment variable is not set"
 
-    client = boto3.client("dsql", region_name=region)
+    # Connection params are the same for both drivers
+    conn_params = {
+        "host": cluster_endpoint,
+        "user": cluster_user,
+        "dbname": "postgres",
+        "sslmode": "verify-full",
+        "sslrootcert": "./root.pem",
+        "application_name": "sqlalchemy",
+    }
 
-    # Create the URL, note that the password token is added when connections are created.
+    # Import the appropriate connector based on driver
+    if driver == "psycopg":
+        import aurora_dsql_psycopg as dsql_connector
+        from psycopg import pq
+
+        # Use the more efficient connection method if it's supported
+        if pq.version() >= 170000:
+            conn_params["sslnegotiation"] = "direct"
+
+        def creator():
+            return dsql_connector.DSQLConnection.connect(**conn_params)
+    else:
+        import aurora_dsql_psycopg2 as dsql_connector
+        import psycopg2.extensions
+
+        # Use the more efficient connection method if it's supported
+        if psycopg2.extensions.libpq_version() >= 170000:
+            conn_params["sslnegotiation"] = "direct"
+
+        def creator():
+            return dsql_connector.connect(**conn_params)
+
+    # Create the URL for dialect registration
     url = URL.create(
         f"auroradsql+{driver}",
         username=cluster_user,
         host=cluster_endpoint,
-        database="postgres"
+        database="postgres",
     )
 
-    # Create the engine
-    engine = create_engine(
-        url,
-        connect_args={"sslmode": "verify-full", "sslrootcert": "./root.pem"},
-        pool_size=5,
-        max_overflow=10
-    )
+    # Create the engine using creator function
+    # The connector handles IAM authentication automatically
+    engine = create_engine(url, creator=creator, pool_size=5, max_overflow=10)
 
-    # Adds a listener that creates a new token every time a new connection is created in the SQLAlchemy engine
-    @event.listens_for(engine, "do_connect")
-    def add_token_to_params(dialect, conn_rec, cargs, cparams):
-        # Generate a fresh token for this connection
-        fresh_token = generate_token(client, cluster_user, cluster_endpoint, region)
-        # Update the password in connection parameters
-        cparams["password"] = fresh_token
-
-    # If we are using the non-admin user, we need to set the search path to use 'myschema' instead of public whenever a connection is created.
+    # If we are using the non-admin user, set the search path to 'myschema'
     @event.listens_for(engine, "connect", insert=True)
     def set_search_path(dbapi_connection, connection_record):
-        if cluster_user == ADMIN: return
+        if cluster_user == ADMIN:
+            return
         existing_autocommit = dbapi_connection.autocommit
         dbapi_connection.autocommit = True
         cursor = dbapi_connection.cursor()
@@ -186,19 +197,13 @@ def create_dsql_engine():
         dbapi_connection.autocommit = existing_autocommit
 
     return engine
-
-def generate_token(client, cluster_user, cluster_endpoint, region):
-    if (cluster_user == ADMIN):
-        return client.generate_db_connect_admin_auth_token(cluster_endpoint, region)
-    else:
-        return client.generate_db_connect_auth_token(cluster_endpoint, region)
 ```
 
 #### Connection Pooling
 
 In SQLAlchemy, [connection pooling](https://docs.sqlalchemy.org/en/20/core/pooling.html#connection-pool-configuration) is
 enabled by default when the engine is created and each engine is automatically associated with a connection pool.
-In the example above, a new token is created for each connection opened in the connection pool. Note that DSQL connections
+The connector generates a fresh IAM token for each new connection. Note that DSQL connections
 will automatically close after one hour. The connection pool will open new connections as needed.
 
 ### Create models
@@ -293,9 +298,9 @@ class Vet(Base):
 ## Additional resources
 
 - [Amazon Aurora DSQL Documentation](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/what-is-aurora-dsql.html)
+- [Aurora DSQL Python Connector](https://github.com/awslabs/aurora-dsql-python-connector)
 - [SQLAlchemy Documentation](https://docs.sqlalchemy.org/en/20/)
 - [Psycopg Documentation](https://www.psycopg.org/docs/)
-- [AWS SDK for Python (Boto3) Documentation](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
 
 ---
 

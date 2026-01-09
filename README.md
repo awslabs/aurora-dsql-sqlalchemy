@@ -41,28 +41,36 @@ pip install psycopg2-binary
 
 ## Dialect Configuration
 
-After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's `create_engine`:
+After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's `create_engine` with the Aurora DSQL Python Connector.
 
 The connection parameter `auroradsql+psycopg` specifies to use the `auroradsql` dialect with the driver `psycopg` (psycopg3).
 To use the driver `psycopg2`, change the connection parameter to `auroradsql+psycopg2`.
 
 ```python
+import aurora_dsql_psycopg as dsql_connector  # or aurora_dsql_psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 
+# Create a connection factory using the connector
+# The connector handles IAM authentication automatically
+def creator():
+    return dsql_connector.DSQLConnection.connect(  # use dsql_connector.connect() for psycopg2
+        host="<CLUSTER_ENDPOINT>",
+        user="<CLUSTER_USER>",
+        dbname="postgres",
+        sslmode="verify-full",
+        sslrootcert="<ROOT_CERT_PATH>",  # or "system" to use system CA store
+        application_name="sqlalchemy",
+    )
+
 url = URL.create(
-    "auroradsql+psycopg",
-    username=<CLUSTER_USER>,
-    host=<CLUSTER_ENDPOINT>,
-    database='postgres',
+    "auroradsql+psycopg",  # or "auroradsql+psycopg2"
+    username="<CLUSTER_USER>",
+    host="<CLUSTER_ENDPOINT>",
+    database="postgres",
 )
 
-engine = create_engine(
-    url,
-    connect_args={"sslmode": "verify-full", "sslrootcert": "<ROOT_CERT_PATH>"},
-    pool_size=5,
-    max_overflow=10
-)
+engine = create_engine(url, creator=creator, pool_size=5, max_overflow=10)
 ```
 
 **Note:** Each connection has a maximum duration limit. See the `Maximum connection duration` time limit in the [Cluster quotas and database limits in Amazon Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/CHAP_quotas.html) page.

@@ -1,7 +1,5 @@
 import os
 
-import boto3
-from sqlalchemy import event
 from sqlalchemy.dialects import registry
 from sqlalchemy.engine import URL
 from sqlalchemy.testing import engines
@@ -28,14 +26,7 @@ registry.register(
 original_testing_engine = engines.testing_engine
 
 
-def custom_testing_engine(
-    url=None,
-    options=None,
-    asyncio=False,
-    transfer_staticpool=False,
-    share_pool=False,
-    _sqlite_savepoint=False,
-):
+def custom_testing_engine(url=None, options=None, *, asyncio=False):
     cluster_user = os.environ.get("CLUSTER_USER", None)
     assert cluster_user is not None, "CLUSTER_USER environment variable is not set"
 
@@ -44,36 +35,41 @@ def custom_testing_engine(
         cluster_endpoint is not None
     ), "CLUSTER_ENDPOINT environment variable is not set"
 
-    region = os.environ.get("REGION", None)
-    assert region is not None, "REGION environment variable is not set"
-
     driver = os.environ.get("DRIVER", None)
     assert driver is not None, "DRIVER environment variable is not set"
 
-    client = boto3.client("dsql", region_name=region)
+    # Connection params are the same for both drivers
+    conn_params = {
+        "host": cluster_endpoint,
+        "user": cluster_user,
+        "dbname": "postgres",
+        "sslmode": "verify-full",
+        "sslrootcert": "./root.pem",
+        "application_name": "sqlalchemy",
+    }
+
+    # Import the appropriate connector based on driver
+    if driver == "psycopg":
+        import aurora_dsql_psycopg as dsql_connector
+
+        def creator():
+            return dsql_connector.DSQLConnection.connect(**conn_params)
+    else:
+        import aurora_dsql_psycopg2 as dsql_connector
+
+        def creator():
+            return dsql_connector.connect(**conn_params)
 
     url = URL.create(
         f"auroradsql+{driver}",
         username=cluster_user,
         host=cluster_endpoint,
         database="postgres",
-        query={"sslmode": "verify-full", "sslrootcert": "./root.pem"},
     )
     print(f"Using custom URL from environment: {url}")
 
-    options = {}
-    engine = original_testing_engine(
-        url, options, asyncio, transfer_staticpool, share_pool, _sqlite_savepoint
-    )
-
-    @event.listens_for(engine, "do_connect")
-    def add_token_to_params(dialect, conn_rec, cargs, cparams):
-        # Generate a fresh token for this connection
-        fresh_token = client.generate_db_connect_admin_auth_token(
-            cluster_endpoint, region
-        )
-        # Update the password in connection parameters
-        cparams["password"] = fresh_token
+    options = {"creator": creator}
+    engine = original_testing_engine(url, options, asyncio=asyncio)
 
     return engine
 

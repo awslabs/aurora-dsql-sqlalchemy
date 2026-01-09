@@ -9,6 +9,6 @@ pythonpath = [
 testpaths = ["test"]
 
 [project.optional-dependencies]
-test = ["sqlalchemy", "pytest", "boto3", "aurora-dsql-sqlalchemy"]
+test = ["sqlalchemy", "pytest", "aurora-dsql-sqlalchemy", "aurora-dsql-python-connector"]
 psycopg2 = ["psycopg2-binary>=2.9.0"]
 psycopg = ["psycopg[binary]>=3.2.0"]
