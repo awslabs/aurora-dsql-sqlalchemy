@@ -57,7 +57,6 @@ jobs:
           pip install --upgrade pip
           pip install .
           pip install '.[test,${{ matrix.driver }}]'
-          python3 -c "import boto3; print(boto3.__version__)"
           pip list
 
       - name: Lint and Check for Formatting
@@ -65,13 +64,12 @@ jobs:
           source sqlalchemy-integ/bin/activate 
           ruff check
 
-      - name: Download Amazon Root Cert for SSL 
+      - name: Download Amazon Root Cert for SSL
         run: wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
-    
+
       - name: Run integration tests for SQL Alchemy
         env:
           CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
-          REGION: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_REGION }}
           CLUSTER_USER: admin
           DRIVER: ${{ matrix.driver }}
         run: |
@@ -83,7 +81,6 @@ jobs:
       - name: Run integration tests for SQL Alchemy Pet Clinic Example
         env:
           CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
-          REGION: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_REGION }}
           CLUSTER_USER: admin
           DRIVER: ${{ matrix.driver }}
         run: |

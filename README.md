@@ -41,27 +41,34 @@ pip install psycopg2-binary
 
 ## Dialect Configuration
 
-After installation, you can connect to an Aurora DSQL cluster using SQLAlchemy's `create_engine`:
-
-The connection parameter `auroradsql+psycopg` specifies to use the `auroradsql` dialect with the driver `psycopg` (psycopg3).
-To use the driver `psycopg2`, change the connection parameter to `auroradsql+psycopg2`.
+After installation, you can connect to an Aurora DSQL cluster using the `create_dsql_engine` helper function:
 
 ```python
-from sqlalchemy import create_engine
-from sqlalchemy.engine.url import URL
+from aurora_dsql_sqlalchemy import create_dsql_engine
 
-url = URL.create(
-    "auroradsql+psycopg",
-    username=<CLUSTER_USER>,
-    host=<CLUSTER_ENDPOINT>,
-    database='postgres',
+engine = create_dsql_engine(
+    host="<CLUSTER_ENDPOINT>",
+    user="<CLUSTER_USER>",
+    driver="psycopg",  # or "psycopg2"
 )
+```
 
-engine = create_engine(
-    url,
-    connect_args={"sslmode": "verify-full", "sslrootcert": "<ROOT_CERT_PATH>"},
-    pool_size=5,
-    max_overflow=10
+The helper function handles:
+- IAM authentication via the Aurora DSQL Python Connector
+- SSL configuration with certificate verification
+- Direct SSL negotiation optimization (when supported by libpq >= 17)
+- Connection pooling with sensible defaults
+
+For more control, you can customize additional parameters:
+
+```python
+engine = create_dsql_engine(
+    host="<CLUSTER_ENDPOINT>",
+    user="<CLUSTER_USER>",
+    driver="psycopg",
+    sslrootcert="./root.pem",  # or "system" to use system CA store
+    pool_size=10,
+    max_overflow=20,
 )
 ```
 
