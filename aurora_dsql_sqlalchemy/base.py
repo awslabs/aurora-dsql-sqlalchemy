@@ -3,7 +3,7 @@ from functools import lru_cache
 from sqlalchemy import bindparam, select, sql
 from sqlalchemy.dialects.postgresql import pg_catalog
 from sqlalchemy.dialects.postgresql.base import PGDDLCompiler, PGDialect
-from sqlalchemy.schema import ForeignKeyConstraint
+from sqlalchemy.schema import ForeignKeyConstraint, PrimaryKeyConstraint
 from sqlalchemy.sql import expression
 
 
@@ -39,6 +39,9 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
             # Disable foreign key creation since DSQL
             # doesn't support foreign key
             if isinstance(constraint, ForeignKeyConstraint):
+                pass
+            # Skip empty primary key constraints
+            elif isinstance(constraint, PrimaryKeyConstraint) and not constraint.columns:
                 pass
             else:
                 constraints_without_fk.append(constraint)
