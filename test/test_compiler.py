@@ -1,5 +1,3 @@
-import os
-
 from sqlalchemy import (
     Column,
     Index,
@@ -16,6 +14,8 @@ from sqlalchemy.testing.suite.test_dialect import testing
 from aurora_dsql_sqlalchemy.psycopg import AuroraDSQLDialect_psycopg
 from aurora_dsql_sqlalchemy.psycopg2 import AuroraDSQLDialect_psycopg2
 
+from .conftest import DRIVER
+
 
 class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
     """
@@ -26,16 +26,9 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
 
     """
 
-    driver = os.environ.get("DRIVER", None)
-    assert driver is not None, "DRIVER environment variable is not set"
-
-    __dialect__ = None
-    if driver == "psycopg2":
-        __dialect__ = AuroraDSQLDialect_psycopg2()
-    else:
-        __dialect__ = AuroraDSQLDialect_psycopg()
-
-    assert __dialect__ is not None, "dialect is not set"
+    __dialect__ = (
+        AuroraDSQLDialect_psycopg2() if DRIVER == "psycopg2" else AuroraDSQLDialect_psycopg()
+    )
 
     @testing.combinations(
         (

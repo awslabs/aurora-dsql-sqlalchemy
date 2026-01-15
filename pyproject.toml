@@ -30,7 +30,7 @@ classifiers = [
 Repository = "https://github.com/awslabs/aurora-dsql-sqlalchemy"
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov", "ruff"]
+test = ["pytest", "pytest-cov", "python-dotenv", "ruff"]
 psycopg2 = ["psycopg2-binary>=2.9.0"]
 psycopg = ["psycopg[binary]>=3.2.0"]
 

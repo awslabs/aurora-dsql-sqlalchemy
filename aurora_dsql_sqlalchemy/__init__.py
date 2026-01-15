@@ -19,6 +19,7 @@ def create_dsql_engine(
     application_name: str = "sqlalchemy",
     pool_size: int = 5,
     max_overflow: int = 10,
+    connect_args: dict[str, Any] | None = None,
     **engine_kwargs: Any,
 ) -> Engine:
     """
@@ -28,7 +29,7 @@ def create_dsql_engine(
     setup and IAM authentication automatically.
 
     Args:
-        host: The Aurora DSQL cluster endpoint.
+        host: The Aurora DSQL cluster endpoint or cluster ID.
         user: The database user (e.g., "admin").
         driver: The PostgreSQL driver to use ("psycopg" or "psycopg2").
             Defaults to "psycopg".
@@ -42,6 +43,8 @@ def create_dsql_engine(
             Defaults to 5.
         max_overflow: The number of connections to allow beyond pool_size.
             Defaults to 10.
+        connect_args: Additional arguments passed to the Aurora DSQL connector
+            (e.g., region, profile, token_duration_secs, custom_credentials_provider).
         **engine_kwargs: Additional keyword arguments passed to create_engine().
 
     Returns:
@@ -53,6 +56,7 @@ def create_dsql_engine(
         ...     host="your-cluster.dsql.us-east-1.on.aws",
         ...     user="admin",
         ...     driver="psycopg",
+        ...     connect_args={"profile": "my-profile"},
         ... )
     """
     conn_params = {
@@ -62,6 +66,7 @@ def create_dsql_engine(
         "sslmode": sslmode,
         "sslrootcert": sslrootcert,
         "application_name": application_name,
+        **(connect_args or {}),
     }
 
     creator: Callable[[], Any]

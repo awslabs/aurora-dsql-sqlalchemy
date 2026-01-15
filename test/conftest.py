@@ -1,9 +1,23 @@
 import os
+import re
 
+from dotenv import load_dotenv
 from sqlalchemy.dialects import registry
+
+load_dotenv()
+
 from sqlalchemy.testing import engines
 
 from aurora_dsql_sqlalchemy import create_dsql_engine
+
+CLUSTER_ENDPOINT = os.environ.get("CLUSTER_ENDPOINT")
+CLUSTER_USER = os.environ.get("CLUSTER_USER", "admin")
+DRIVER = os.environ.get("DRIVER", "psycopg")
+
+match = re.match(r"^([a-z0-9]+)\.dsql(?:-[^.]+)?\.([a-z0-9-]+)\.on\.aws$", CLUSTER_ENDPOINT or "")
+if not match:
+    raise ValueError(f"Invalid CLUSTER_ENDPOINT format: {CLUSTER_ENDPOINT}")
+CLUSTER_ID, REGION = match.groups()
 
 # Register your dialect
 registry.register(
@@ -25,24 +39,12 @@ registry.register(
 
 
 def custom_testing_engine(url=None, options=None, *, asyncio=False):
-    cluster_user = os.environ.get("CLUSTER_USER", None)
-    assert cluster_user is not None, "CLUSTER_USER environment variable is not set"
+    print(f"Creating DSQL engine for {CLUSTER_ENDPOINT} with driver {DRIVER}")
 
-    cluster_endpoint = os.environ.get("CLUSTER_ENDPOINT", None)
-    assert (
-        cluster_endpoint is not None
-    ), "CLUSTER_ENDPOINT environment variable is not set"
-
-    driver = os.environ.get("DRIVER", None)
-    assert driver is not None, "DRIVER environment variable is not set"
-
-    print(f"Creating DSQL engine for {cluster_endpoint} with driver {driver}")
-
-    # Use the helper function to create the engine
     engine = create_dsql_engine(
-        host=cluster_endpoint,
-        user=cluster_user,
-        driver=driver,
+        host=CLUSTER_ENDPOINT,
+        user=CLUSTER_USER,
+        driver=DRIVER,
     )
 
     return engine
