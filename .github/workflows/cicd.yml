@@ -31,38 +31,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.version }}
-
-      - name: Cache pip packages
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ matrix.version }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.PYTHON_IAM_ROLE }}
           aws-region: us-east-1
 
-      - name: Configure Python
-        run: |
-          python3 -m venv sqlalchemy-integ
-          source sqlalchemy-integ/bin/activate
-          pip install --upgrade pip
-          pip install .
-          pip install '.[test,${{ matrix.driver }}]'
-          pip list
+      - name: Setup uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: ${{ matrix.version }}
+      - name: Install dependencies
+        run: uv sync --extra test --extra ${{ matrix.driver }}
 
       - name: Lint and Check for Formatting
         run: |
-          source sqlalchemy-integ/bin/activate 
-          ruff check
+          uv run ruff check
 
       - name: Download Amazon Root Cert for SSL
         run: wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
@@ -73,10 +57,8 @@ jobs:
           CLUSTER_USER: admin
           DRIVER: ${{ matrix.driver }}
         run: |
-          source sqlalchemy-integ/bin/activate 
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
-          pytest -v test/
-
+          uv run pytest -v test/
 
       - name: Run integration tests for SQL Alchemy Pet Clinic Example
         env:
@@ -84,6 +66,5 @@ jobs:
           CLUSTER_USER: admin
           DRIVER: ${{ matrix.driver }}
         run: |
-          source sqlalchemy-integ/bin/activate 
           echo "$GITHUB_WORKSPACE" >> $GITHUB_PATH
-          pytest -v examples/pet-clinic-app/test/
+          uv run pytest -v examples/pet-clinic-app/test/
