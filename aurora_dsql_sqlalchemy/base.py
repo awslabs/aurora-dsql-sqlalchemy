@@ -8,7 +8,6 @@ from sqlalchemy.sql import expression
 
 
 class AuroraDSQLDDLCompiler(PGDDLCompiler):
-
     def create_table_constraints(
         self, table, _include_foreign_key_constraints=None, **kw
     ):
@@ -41,7 +40,9 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
             if isinstance(constraint, ForeignKeyConstraint):
                 pass
             # Skip empty primary key constraints
-            elif isinstance(constraint, PrimaryKeyConstraint) and not constraint.columns:
+            elif (
+                isinstance(constraint, PrimaryKeyConstraint) and not constraint.columns
+            ):
                 pass
             else:
                 constraints_without_fk.append(constraint)
