@@ -64,6 +64,7 @@ exclude = [
     "build",
     "dist",
     "sqlalchemy-integ",
+    "aurora_dsql_sqlalchemy/_version.py",
 ]
 
 [tool.ruff.format]
