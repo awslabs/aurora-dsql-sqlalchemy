@@ -11,9 +11,7 @@ license = {text = "Apache License 2.0"}
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    # Pin SQLAlchemy <2.0.45 due to breaking API change in testing_engine()
-    # TODO: Update test/conftest.py to support new signature and remove pin
-    "sqlalchemy>=2.0.0,<2.0.45",
+    "sqlalchemy>=2.0.0",
     "aurora-dsql-python-connector>=0.1.0"
 ]
 classifiers = [
