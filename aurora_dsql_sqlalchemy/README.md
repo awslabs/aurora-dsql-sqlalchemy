@@ -1,27 +1,46 @@
 # Aurora DSQL Dialect for SQLAlchemy - Developer instructions
 
-## Running integration tests
-
-The following libraries are required to run the integration tests:
-
-- boto3
-- pytest
-
-To run the test use the following:
+## Clone the repository
 
 ```bash
-# Clone the entire repository
 git clone https://github.com/awslabs/aurora-dsql-sqlalchemy.git
 cd aurora-dsql-sqlalchemy
+```
 
-# Download the Amazon root certificate from the official trust store:
+## Install `uv`
+
+Install `uv` using the [official installation guide](https://docs.astral.sh/uv/getting-started/installation/) or via [mise](https://mise.jdx.dev/).
+
+## Download Amazon root certificate
+
+Download the Amazon root certificate to verify DSQL connections.
+
+```bash
 wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
+```
 
-pip install '.[test,psycopg]' # use psycopg2 if testing via psycopg2
+## Install dependencies
 
+```bash
+uv sync --extra test --extra psycopg
+```
+
+Use the `psycopg2` extra when testing against the `psycopg2` driver.
+
+## Configure environment variables
+
+Set the following variables to connect to your cluster:
+
+```bash
 export CLUSTER_ENDPOINT=<YOUR_CLUSTER_HOSTNAME>
 export CLUSTER_USER=admin
-export REGION=us-east-1
-export DRIVER=psycopg # use 'psycopg' for psycopg3 and 'psycopg2' for psycopg2
-pytest
+export DRIVER=psycopg
+```
+
+Use `DRIVER=psycopg2` when testing against the `psycopg2` driver.
+
+## Running integration tests
+
+```bash
+uv run pytest
 ```
