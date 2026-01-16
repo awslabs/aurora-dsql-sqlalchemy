@@ -10,6 +10,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 *.egg-info/
+aurora_dsql_sqlalchemy/_version.py
 
 /.coverage
 /.coverage.*
