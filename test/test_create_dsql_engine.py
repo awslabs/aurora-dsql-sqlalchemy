@@ -58,7 +58,9 @@ class TestCreateDsqlEngine(fixtures.TestBase):
     )
     def test_default_engine_params(self, mock_driver, param, expected):
         """Verify default engine parameters."""
-        create_dsql_engine(host="test.dsql.us-east-1.on.aws", user="admin")
+        create_dsql_engine(
+            host="test.dsql.us-east-1.on.aws", user="admin", driver=DRIVER
+        )
         assert mock_driver["create_engine"].call_args.kwargs[param] == expected
 
     def test_default_driver_is_psycopg(self, mock_driver):
@@ -72,14 +74,16 @@ class TestCreateDsqlEngine(fixtures.TestBase):
 
     def test_default_dbname(self, mock_driver):
         """Verify default dbname is postgres."""
-        create_dsql_engine(host="test.dsql.us-east-1.on.aws", user="admin")
+        create_dsql_engine(
+            host="test.dsql.us-east-1.on.aws", user="admin", driver=DRIVER
+        )
         url = mock_driver["create_engine"].call_args.args[0]
         assert url.database == "postgres"
 
     def test_custom_pool_size(self, mock_driver):
         """Verify custom pool_size is passed through."""
         create_dsql_engine(
-            host="test.dsql.us-east-1.on.aws", user="admin", pool_size=20
+            host="test.dsql.us-east-1.on.aws", user="admin", driver=DRIVER, pool_size=20
         )
         assert mock_driver["create_engine"].call_args.kwargs["pool_size"] == 20
 
@@ -102,7 +106,9 @@ class TestCreateDsqlEngine(fixtures.TestBase):
         else:
             mock_driver["ext"].libpq_version.return_value = libpq_version
 
-        create_dsql_engine(host="test.dsql.us-east-1.on.aws", user="admin")
+        create_dsql_engine(
+            host="test.dsql.us-east-1.on.aws", user="admin", driver=DRIVER
+        )
 
         creator = mock_driver["create_engine"].call_args.kwargs["creator"]
         creator()
@@ -122,6 +128,7 @@ class TestCreateDsqlEngine(fixtures.TestBase):
         create_dsql_engine(
             host="test.dsql.us-east-1.on.aws",
             user="admin",
+            driver=DRIVER,
             echo=True,
             pool_pre_ping=True,
         )
