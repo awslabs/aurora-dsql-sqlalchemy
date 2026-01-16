@@ -3,12 +3,11 @@ import re
 
 from dotenv import load_dotenv
 from sqlalchemy.dialects import registry
-
-load_dotenv()
-
 from sqlalchemy.testing import engines
 
 from aurora_dsql_sqlalchemy import create_dsql_engine
+
+load_dotenv()
 
 CLUSTER_ENDPOINT = os.environ.get("CLUSTER_ENDPOINT")
 CLUSTER_USER = os.environ.get("CLUSTER_USER", "admin")
