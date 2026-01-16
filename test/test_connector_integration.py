@@ -40,7 +40,8 @@ class TestConnectorIntegration(fixtures.TestBase):
     def test_profile_used_for_connection(self):
         """Verify that profile parameter is passed to boto3 Session."""
         with patch("dsql_core.token_manager.boto3.Session") as mock_session:
-            mock_session.return_value.client.return_value.generate_db_connect_admin_auth_token.return_value = "mock-token"
+            mock_client = mock_session.return_value.client.return_value
+            mock_client.generate_db_connect_admin_auth_token.return_value = "mock-token"
             engine = create_dsql_engine(
                 host=CLUSTER_ENDPOINT,
                 user=CLUSTER_USER,
@@ -50,7 +51,7 @@ class TestConnectorIntegration(fixtures.TestBase):
             try:
                 engine.connect()
             except Exception:
-                pass  # Connection will fail with mock token, but we just need to verify the call
+                pass  # Connection will fail with mock token
             mock_session.assert_called_with(profile_name="test-profile")
 
     def test_cluster_id_with_region(self):
