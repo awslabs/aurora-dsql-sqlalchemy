@@ -24,6 +24,8 @@ aurora_dsql_sqlalchemy/_version.py
 **/*/box/
 
 venv
+root.pem
+.env
 
 .git
 

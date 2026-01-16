@@ -29,15 +29,21 @@ Use the `psycopg2` extra when testing against the `psycopg2` driver.
 
 ## Configure environment variables
 
-Set the following variables to connect to your cluster:
+Copy `.env.example` to `.env` and update with your cluster details:
+
+```bash
+cp .env.example .env
+```
+
+Use `DRIVER=psycopg2` when testing against the `psycopg2` driver.
+
+Alternatively, set the following variables to connect to your cluster:
 
 ```bash
 export CLUSTER_ENDPOINT=<YOUR_CLUSTER_HOSTNAME>
 export CLUSTER_USER=admin
 export DRIVER=psycopg
 ```
-
-Use `DRIVER=psycopg2` when testing against the `psycopg2` driver.
 
 ## Running integration tests
 
