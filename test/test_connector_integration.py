@@ -1,7 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-import pytest
 from botocore.credentials import CredentialProvider, Credentials
 from botocore.session import get_session
 from sqlalchemy import text
