@@ -14,7 +14,9 @@ CLUSTER_ENDPOINT = os.environ.get("CLUSTER_ENDPOINT")
 CLUSTER_USER = os.environ.get("CLUSTER_USER", "admin")
 DRIVER = os.environ.get("DRIVER", "psycopg")
 
-match = re.match(r"^([a-z0-9]+)\.dsql(?:-[^.]+)?\.([a-z0-9-]+)\.on\.aws$", CLUSTER_ENDPOINT or "")
+match = re.match(
+    r"^([a-z0-9]+)\.dsql(?:-[^.]+)?\.([a-z0-9-]+)\.on\.aws$", CLUSTER_ENDPOINT or ""
+)
 if not match:
     raise ValueError(f"Invalid CLUSTER_ENDPOINT format: {CLUSTER_ENDPOINT}")
 CLUSTER_ID, REGION = match.groups()

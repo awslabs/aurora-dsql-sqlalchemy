@@ -12,6 +12,7 @@ LIBPQ_16 = 160000
 LIBPQ_17 = 170000
 DEFAULT_LIBPQ_VERSION = LIBPQ_16
 
+
 @pytest.fixture
 def mock_psycopg():
     """Mock psycopg dependencies for testing."""
@@ -95,7 +96,9 @@ class TestCreateDsqlEngine(fixtures.TestBase):
                 host="test.dsql.us-east-1.on.aws", user="admin", driver="invalid"
             )
 
-    @pytest.mark.parametrize("libpq_version,expect_direct", [(LIBPQ_17, True), (LIBPQ_16, False)])
+    @pytest.mark.parametrize(
+        "libpq_version,expect_direct", [(LIBPQ_17, True), (LIBPQ_16, False)]
+    )
     def test_sslnegotiation_based_on_libpq_version(
         self, mock_psycopg, libpq_version, expect_direct
     ):
@@ -116,7 +119,10 @@ class TestCreateDsqlEngine(fixtures.TestBase):
     def test_engine_kwargs_passed_through(self, mock_psycopg):
         """Verify extra engine kwargs are passed to create_engine."""
         create_dsql_engine(
-            host="test.dsql.us-east-1.on.aws", user="admin", echo=True, pool_pre_ping=True
+            host="test.dsql.us-east-1.on.aws",
+            user="admin",
+            echo=True,
+            pool_pre_ping=True,
         )
         assert mock_psycopg["create_engine"].call_args.kwargs["echo"] is True
         assert mock_psycopg["create_engine"].call_args.kwargs["pool_pre_ping"] is True

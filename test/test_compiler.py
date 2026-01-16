@@ -27,7 +27,9 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
     """
 
     __dialect__ = (
-        AuroraDSQLDialect_psycopg2() if DRIVER == "psycopg2" else AuroraDSQLDialect_psycopg()
+        AuroraDSQLDialect_psycopg2()
+        if DRIVER == "psycopg2"
+        else AuroraDSQLDialect_psycopg()
     )
 
     @testing.combinations(
