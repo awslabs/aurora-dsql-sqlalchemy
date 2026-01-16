@@ -18,9 +18,9 @@ def create_dsql_engine():
     assert cluster_user is not None, "CLUSTER_USER environment variable is not set"
 
     cluster_endpoint = os.environ.get("CLUSTER_ENDPOINT", None)
-    assert (
-        cluster_endpoint is not None
-    ), "CLUSTER_ENDPOINT environment variable is not set"
+    assert cluster_endpoint is not None, (
+        "CLUSTER_ENDPOINT environment variable is not set"
+    )
 
     driver = os.environ.get("DRIVER", None)
     assert driver is not None, "DRIVER environment variable is not set"
@@ -110,7 +110,6 @@ class Vet(Base):
 
 
 def demo_pet_clinic_operations(engine):
-
     print("Starting demo pet clinic operations")
     print("Starting cleanup of existing tables")
     # Clean up any existing tables
@@ -212,7 +211,6 @@ def execute_sql_statement_retry(engine, sql_statement, max_retries=None):
 
 
 def demo_retry_mechanism(engine):
-
     print("Starting demo retry mechanism")
     # Create and drop the table, will retry until success is reached
     print("Creating test table abc")

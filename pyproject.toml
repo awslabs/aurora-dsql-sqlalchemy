@@ -1,19 +1,17 @@
 [build-system]
-requires = ["setuptools>=42", "wheel"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
 
 [project]
 name = "aurora-dsql-sqlalchemy"
-version = "1.0.2"
+dynamic = ["version"]
 description = "Amazon Aurora DSQL dialect for SQLAlchemy"
 authors = [{name = "Amazon Web Services"}]
 license = {text = "Apache License 2.0"}
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    # Pin SQLAlchemy <2.0.45 due to breaking API change in testing_engine()
-    # TODO: Update test/conftest.py to support new signature and remove pin
-    "sqlalchemy>=2.0.0,<2.0.45",
+    "sqlalchemy>=2.0.0",
     "aurora-dsql-python-connector>=0.1.0"
 ]
 classifiers = [
@@ -30,7 +28,7 @@ classifiers = [
 Repository = "https://github.com/awslabs/aurora-dsql-sqlalchemy"
 
 [project.optional-dependencies]
-test = ["pytest", "pytest-cov", "python-dotenv", "ruff"]
+test = ["pytest", "pytest-cov", "python-dotenv", "ruff", "hatch-vcs"]
 psycopg2 = ["psycopg2-binary>=2.9.0"]
 psycopg = ["psycopg[binary]>=3.2.0"]
 
@@ -41,13 +39,20 @@ auroradsql = "aurora_dsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg"
 # Note: psyscopg (psycopg3) 
 "auroradsql.psycopg" = "aurora_dsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg" 
 
-[tool.setuptools]
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "aurora_dsql_sqlalchemy/_version.py"
+
+[tool.hatch.build.targets.wheel]
 packages = ["aurora_dsql_sqlalchemy"]
 
 [tool.pytest.ini_options]
 addopts = "-v  -r chars -s" 
 python_files = ["test/*test_*.py"]
 testpaths = ["test"]
+markers = ["backend: SQLAlchemy test requiring database backend"]
 
 [tool.ruff]
 target-version = "py310"
@@ -65,6 +70,7 @@ exclude = [
     "build",
     "dist",
     "sqlalchemy-integ",
+    "aurora_dsql_sqlalchemy/_version.py",
 ]
 
 [tool.ruff.format]
