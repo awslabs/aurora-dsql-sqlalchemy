@@ -47,8 +47,7 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
                     auroradsql_nulls_not_distinct=True,
                 )
             ),
-            "CREATE UNIQUE INDEX ASYNC test_idx1 ON test_tbl "
-            "(data) NULLS NOT DISTINCT",
+            "CREATE UNIQUE INDEX ASYNC test_idx1 ON test_tbl (data) NULLS NOT DISTINCT",
         ),
         (
             lambda tbl: schema.CreateIndex(
@@ -59,7 +58,7 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
                     auroradsql_nulls_not_distinct=False,
                 )
             ),
-            "CREATE UNIQUE INDEX ASYNC test_idx2 ON test_tbl " "(data2) NULLS DISTINCT",
+            "CREATE UNIQUE INDEX ASYNC test_idx2 ON test_tbl (data2) NULLS DISTINCT",
         ),
         (
             lambda tbl: schema.CreateIndex(

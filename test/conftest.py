@@ -29,9 +29,9 @@ def custom_testing_engine(url=None, options=None, *, asyncio=False):
     assert cluster_user is not None, "CLUSTER_USER environment variable is not set"
 
     cluster_endpoint = os.environ.get("CLUSTER_ENDPOINT", None)
-    assert (
-        cluster_endpoint is not None
-    ), "CLUSTER_ENDPOINT environment variable is not set"
+    assert cluster_endpoint is not None, (
+        "CLUSTER_ENDPOINT environment variable is not set"
+    )
 
     driver = os.environ.get("DRIVER", None)
     assert driver is not None, "DRIVER environment variable is not set"
