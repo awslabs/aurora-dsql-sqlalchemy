@@ -1,6 +1,8 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+from unittest.mock import patch
+
 from botocore.credentials import CredentialProvider, Credentials
 from botocore.session import get_session
 from sqlalchemy import text
@@ -36,14 +38,20 @@ class TestConnectorIntegration(fixtures.TestBase):
     """Integration tests verifying connector parameters work correctly."""
 
     def test_profile_used_for_connection(self):
-        """Verify that profile parameter is used when connecting."""
-        engine = create_dsql_engine(
-            host=CLUSTER_ENDPOINT,
-            user=CLUSTER_USER,
-            driver=DRIVER,
-            connect_args={"profile": "default"},
-        )
-        _verify_connection(engine)
+        """Verify that profile parameter is passed to boto3 Session."""
+        with patch("dsql_core.token_manager.boto3.Session") as mock_session:
+            mock_session.return_value.client.return_value.generate_db_connect_admin_auth_token.return_value = "mock-token"
+            engine = create_dsql_engine(
+                host=CLUSTER_ENDPOINT,
+                user=CLUSTER_USER,
+                driver=DRIVER,
+                connect_args={"profile": "test-profile"},
+            )
+            try:
+                engine.connect()
+            except Exception:
+                pass  # Connection will fail with mock token, but we just need to verify the call
+            mock_session.assert_called_with(profile_name="test-profile")
 
     def test_cluster_id_with_region(self):
         """Verify that cluster ID with region parameter works."""
