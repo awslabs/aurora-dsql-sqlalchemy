@@ -22,8 +22,8 @@ jobs:
       max-parallel: 1 # limit to 1 since we have 1 dsql cluster
       matrix:
         # Run test for every python version we intend to support.
-        version: ['3.10', '3.11', '3.12', '3.13']
-        driver: ['psycopg2', 'psycopg']
+        version: ["3.10", "3.11", "3.12", "3.13"]
+        driver: ["psycopg2", "psycopg"]
     permissions:
       id-token: write # required by aws-actions/configure-aws-credentials
 
