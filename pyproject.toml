@@ -60,19 +60,22 @@ markers = ["backend: SQLAlchemy test requiring database backend"]
 [tool.ruff]
 target-version = "py310"
 line-length = 88
-lint.select = ["E", "F", "I"]
-lint.ignore = []
+
+[tool.ruff.lint]
+extend-select = [
+    "E",      # https://docs.astral.sh/ruff/rules/#error-e
+    "F",      # https://docs.astral.sh/ruff/rules/#pyflakes-f
+    "FA",     # https://docs.astral.sh/ruff/rules/#flake8-future-annotations-fa
+    "I",      # https://docs.astral.sh/ruff/rules/#isort-i
+    "RUF100", # https://docs.astral.sh/ruff/rules/#ruff-specific-rules-ruf
+    "UP",     # https://docs.astral.sh/ruff/rules/#pyupgrade-up
+    "W",      # https://docs.astral.sh/ruff/rules/#warning-w
+]
 exclude = [
     ".git",
-    ".hg",
-    ".mypy_cache",
-    ".tox",
     ".venv",
-    "_build",
-    "buck-out",
     "build",
     "dist",
-    "sqlalchemy-integ",
     "aurora_dsql_sqlalchemy/_version.py",
 ]
 
