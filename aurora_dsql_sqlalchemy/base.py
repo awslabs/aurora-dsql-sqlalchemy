@@ -8,6 +8,8 @@ from sqlalchemy.sql import expression
 
 
 class AuroraDSQLDDLCompiler(PGDDLCompiler):
+    dialect: "AuroraDSQLDialect"
+
     def create_table_constraints(
         self, table, _include_foreign_key_constraints=None, **kw
     ):
@@ -149,7 +151,8 @@ class AuroraDSQLDialect(PGDialect):
         # subquery is faster than trying to use outer joins for them
         generated = (
             pg_catalog.pg_attribute.c.attgenerated.label("generated")
-            if self.server_version_info >= (12,)
+            if self.server_version_info is not None
+            and self.server_version_info >= (12,)
             else sql.null().label("generated")
         )
 

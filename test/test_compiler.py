@@ -9,7 +9,8 @@ from sqlalchemy import (
 )
 from sqlalchemy.testing import fixtures
 from sqlalchemy.testing.assertions import AssertsCompiledSQL
-from sqlalchemy.testing.suite.test_dialect import testing
+from sqlalchemy.testing.config import combinations
+from sqlalchemy.testing.util import resolve_lambda
 
 from aurora_dsql_sqlalchemy.psycopg import AuroraDSQLDialect_psycopg
 from aurora_dsql_sqlalchemy.psycopg2 import AuroraDSQLDialect_psycopg2
@@ -32,7 +33,7 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
         else AuroraDSQLDialect_psycopg()
     )
 
-    @testing.combinations(
+    @combinations(
         (
             lambda tbl: schema.CreateIndex(
                 Index(
@@ -77,7 +78,7 @@ class CompileTest(fixtures.TestBase, AssertsCompiledSQL):
             Column("data3", Integer),
         )
 
-        expr = testing.resolve_lambda(expr_fn, tbl=tbl)
+        expr = resolve_lambda(expr_fn, tbl=tbl)
         self.assert_compile(expr, expected, dialect=dd)
 
     def test_index_extra_include_1(self):
