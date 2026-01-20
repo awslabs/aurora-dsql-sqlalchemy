@@ -39,6 +39,9 @@ auroradsql = "aurora_dsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg"
 # Note: psyscopg (psycopg3) 
 "auroradsql.psycopg" = "aurora_dsql_sqlalchemy.psycopg:AuroraDSQLDialect_psycopg" 
 
+[dependency-groups]
+dev = ["pre-commit", "ruff", "pyright"]
+
 [tool.hatch.version]
 source = "vcs"
 

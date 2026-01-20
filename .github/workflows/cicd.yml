@@ -44,10 +44,6 @@ jobs:
       - name: Install dependencies
         run: uv sync --extra test --extra ${{ matrix.driver }}
 
-      - name: Lint and Check for Formatting
-        run: |
-          uv run ruff check
-
       - name: Download Amazon Root Cert for SSL
         run: wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
 
