@@ -3,7 +3,8 @@
 
 """Aurora DSQL dialect for SQLAlchemy."""
 
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from sqlalchemy import create_engine
 from sqlalchemy.engine import URL, Engine

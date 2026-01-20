@@ -43,7 +43,7 @@ def create_dsql_engine():
         existing_autocommit = dbapi_connection.autocommit
         dbapi_connection.autocommit = True
         cursor = dbapi_connection.cursor()
-        cursor.execute("SET SESSION search_path='%s'" % NON_ADMIN_SCHEMA)
+        cursor.execute(f"SET SESSION search_path='{NON_ADMIN_SCHEMA}'")
         cursor.close()
         dbapi_connection.autocommit = existing_autocommit
 
