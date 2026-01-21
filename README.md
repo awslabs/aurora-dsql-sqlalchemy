@@ -66,13 +66,22 @@ engine = create_dsql_engine(
     host="<CLUSTER_ENDPOINT>",
     user="<CLUSTER_USER>",
     driver="psycopg",
-    sslrootcert="./root.pem",  # or "system" to use system CA store
     pool_size=10,
     max_overflow=20,
 )
 ```
 
 **Note:** Each connection has a maximum duration limit. See the `Maximum connection duration` time limit in the [Cluster quotas and database limits in Amazon Aurora DSQL](https://docs.aws.amazon.com/aurora-dsql/latest/userguide/CHAP_quotas.html) page.
+
+### SSL/TLS Configuration
+
+Aurora DSQL requires TLS for all connections. Plaintext connections are not supported. Enabling certificate verification protects against on-path and impersonation attacks.
+
+`create_dsql_engine` defaults to:
+- `sslmode="verify-full"` - verifies the server certificate and hostname
+- `sslrootcert="system"` - uses the default certificate authority (CA) trust defined by libpq’s TLS backend
+
+See [SSL Configuration](docs/SSL_CONFIGURATION.md) for detailed setup instructions.
 
 ## Best Practices
 

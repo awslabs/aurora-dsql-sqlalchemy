@@ -11,13 +11,9 @@ cd aurora-dsql-sqlalchemy
 
 Install `uv` using the [official installation guide](https://docs.astral.sh/uv/getting-started/installation/) or via [mise](https://mise.jdx.dev/).
 
-## Download Amazon root certificate
+## Configure SSL certificates
 
-Download the Amazon root certificate to verify DSQL connections.
-
-```bash
-wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
-```
+See [SSL/TLS Configuration](../docs/SSL_CONFIGURATION.md) for instructions on configuring certificate trust.
 
 ## Install dependencies
 
