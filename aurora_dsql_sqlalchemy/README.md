@@ -22,10 +22,8 @@ wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
 ## Install dependencies
 
 ```bash
-uv sync --extra test --extra psycopg
+uv sync
 ```
-
-Use the `psycopg2` extra when testing against the `psycopg2` driver.
 
 ## Set up pre-commit hooks
 

@@ -29,41 +29,45 @@ psycopg = [
 psycopg2 = [
     { name = "psycopg2-binary" },
 ]
-test = [
+
+[package.dev-dependencies]
+dev = [
     { name = "hatch-vcs" },
+    { name = "pre-commit" },
+    { name = "pyright" },
     { name = "pytest" },
     { name = "pytest-cov" },
     { name = "python-dotenv" },
     { name = "ruff" },
 ]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pre-commit" },
-    { name = "pyright" },
-    { name = "ruff" },
+psycopg = [
+    { name = "psycopg", extra = ["binary"] },
+]
+psycopg2 = [
+    { name = "psycopg2-binary" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "aurora-dsql-python-connector", specifier = ">=0.1.0" },
-    { name = "hatch-vcs", marker = "extra == 'test'" },
     { name = "psycopg", extras = ["binary"], marker = "extra == 'psycopg'", specifier = ">=3.2.0" },
     { name = "psycopg2-binary", marker = "extra == 'psycopg2'", specifier = ">=2.9.0" },
-    { name = "pytest", marker = "extra == 'test'" },
-    { name = "pytest-cov", marker = "extra == 'test'" },
-    { name = "python-dotenv", marker = "extra == 'test'" },
-    { name = "ruff", marker = "extra == 'test'" },
     { name = "sqlalchemy", specifier = ">=2.0.0" },
 ]
-provides-extras = ["psycopg", "psycopg2", "test"]
+provides-extras = ["psycopg", "psycopg2"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "hatch-vcs" },
     { name = "pre-commit" },
     { name = "pyright" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "python-dotenv" },
     { name = "ruff" },
 ]
+psycopg = [{ name = "psycopg", extras = ["binary"], specifier = ">=3.2.0" }]
+psycopg2 = [{ name = "psycopg2-binary", specifier = ">=2.9.0" }]
 
 [[package]]
 name = "boto3"
