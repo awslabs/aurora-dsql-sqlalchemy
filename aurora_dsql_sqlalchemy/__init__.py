@@ -80,8 +80,10 @@ def create_dsql_engine(
         if pq.version() >= 170000:
             conn_params["sslnegotiation"] = "direct"
 
-        def creator():
+        def psycopg_creator():
             return dsql_connector.DSQLConnection.connect(**conn_params)
+
+        creator = psycopg_creator
     elif driver == "psycopg2":
         import aurora_dsql_psycopg2 as dsql_connector
         import psycopg2.extensions
@@ -90,8 +92,10 @@ def create_dsql_engine(
         if psycopg2.extensions.libpq_version() >= 170000:
             conn_params["sslnegotiation"] = "direct"
 
-        def creator():
+        def psycopg2_creator():
             return dsql_connector.connect(**conn_params)
+
+        creator = psycopg2_creator
     else:
         raise ValueError(f"Unsupported driver: {driver}. Use 'psycopg' or 'psycopg2'.")
 

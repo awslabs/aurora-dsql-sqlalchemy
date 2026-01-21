@@ -3,10 +3,10 @@
 
 import os
 
-from sqlalchemy import Column, Date, String, event, select
+from sqlalchemy import Date, String, event, select
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import DeclarativeBase, Session, relationship
+from sqlalchemy.exc import DBAPIError
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship
 from sqlalchemy.sql import text
 
 from aurora_dsql_sqlalchemy import create_dsql_engine as _create_dsql_engine
@@ -61,22 +61,26 @@ class Base(DeclarativeBase):
 class Owner(Base):
     __tablename__ = "owner"
 
-    id = Column("id", UUID, primary_key=True, default=text("gen_random_uuid()"))
-    name = Column("name", String(30), nullable=False)
-    city = Column("city", String(80), nullable=False)
-    telephone = Column("telephone", String(20), nullable=True, default=None)
+    id: Mapped[str] = mapped_column(
+        UUID, primary_key=True, default=text("gen_random_uuid()")
+    )
+    name: Mapped[str] = mapped_column(String(30))
+    city: Mapped[str] = mapped_column(String(80))
+    telephone: Mapped[str | None] = mapped_column(String(20), default=None)
 
 
 # Define a Pet table
 class Pet(Base):
     __tablename__ = "pet"
 
-    id = Column("id", UUID, primary_key=True, default=text("gen_random_uuid()"))
-    name = Column("name", String(30), nullable=False)
-    birth_date = Column("birth_date", Date(), nullable=False)
-    owner_id = Column("owner_id", UUID, nullable=True)
+    id: Mapped[str] = mapped_column(
+        UUID, primary_key=True, default=text("gen_random_uuid()")
+    )
+    name: Mapped[str] = mapped_column(String(30))
+    birth_date: Mapped[Date] = mapped_column(Date())
+    owner_id: Mapped[str | None] = mapped_column(UUID)
     # One to many
-    owner = relationship(
+    owner: Mapped["Owner"] = relationship(
         "Owner", foreign_keys=[owner_id], primaryjoin="Owner.id == Pet.owner_id"
     )
 
@@ -86,25 +90,29 @@ class Pet(Base):
 class VetSpecialties(Base):
     __tablename__ = "vetSpecialties"
 
-    id = Column("id", UUID, primary_key=True, default=text("gen_random_uuid()"))
-    vet_id = Column("vet_id", UUID, nullable=True)
-    specialty_id = Column("specialty_id", String(80), nullable=True)
+    id: Mapped[str] = mapped_column(
+        UUID, primary_key=True, default=text("gen_random_uuid()")
+    )
+    vet_id: Mapped[str | None] = mapped_column(UUID)
+    specialty_id: Mapped[str | None] = mapped_column(String(80))
 
 
 # Define a Specialty table
 class Specialty(Base):
     __tablename__ = "specialty"
-    id = Column("name", String(80), primary_key=True)
+    id: Mapped[str] = mapped_column("name", String(80), primary_key=True)
 
 
 # Define a Vet table
 class Vet(Base):
     __tablename__ = "vet"
 
-    id = Column("id", UUID, primary_key=True, default=text("gen_random_uuid()"))
-    name = Column("name", String(30), nullable=False)
+    id: Mapped[str] = mapped_column(
+        UUID, primary_key=True, default=text("gen_random_uuid()")
+    )
+    name: Mapped[str] = mapped_column(String(30))
     # Many-to-Many mapping
-    specialties = relationship(
+    specialties: Mapped[list["Specialty"]] = relationship(
         "Specialty",
         secondary=VetSpecialties.__table__,
         primaryjoin="foreign(VetSpecialties.vet_id)==Vet.id",
@@ -143,13 +151,13 @@ def demo_pet_clinic_operations(engine):
     # Read back data for the pet.
     print("Fetching Pet-1 data")
     pet_query = select(Pet).where(Pet.name == "Pet-1")
-    pet_1 = session.execute(pet_query).fetchone()[0]
+    pet_1 = session.scalars(pet_query).one()
     print("Successfully fetched Pet-1 data")
 
     # Get the corresponding owner
     print("Fetching Pet-1's owner data")
     owner_query = select(Owner).where(Owner.id == pet_1.owner_id)
-    john_doe = session.execute(owner_query).fetchone()[0]
+    john_doe = session.scalars(owner_query).one()
     print("Successfully fetched Pet-1's owner data")
 
     # Test: check read values
@@ -176,12 +184,12 @@ def demo_pet_clinic_operations(engine):
     # Read back data for the vets.
     print("Fetching vet data: Akua Mansa")
     vet_query = select(Vet).where(Vet.name == "Akua Mansa")
-    akua_mansa = session.execute(vet_query).fetchone()[0]
+    akua_mansa = session.scalars(vet_query).one()
     print("Successfully fetched vet data: Akua Mansa")
 
     print("Fetching vet data: Carlos Salazar")
     vet_query = select(Vet).where(Vet.name == "Carlos Salazar")
-    carlos_salazar = session.execute(vet_query).fetchone()[0]
+    carlos_salazar = session.scalars(vet_query).one()
     print("Successfully fetched vet data: Carlos Salazar")
 
     # Test: check read value
@@ -203,7 +211,7 @@ def execute_sql_statement_retry(engine, sql_statement, max_retries=None):
                 connection.execute(text(sql_statement))
                 connection.commit()
                 break
-            except SQLAlchemyError as e:
+            except DBAPIError as e:
                 connection.rollback()
                 error = str(e.orig)
                 if not ("OC001" in error or "OC000" in error):

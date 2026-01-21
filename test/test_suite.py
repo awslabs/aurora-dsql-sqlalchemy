@@ -1,8 +1,10 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-from sqlalchemy import Column, Integer, String, Table, bindparam, select, testing
-from sqlalchemy.testing import config, eq_, fixtures
+from sqlalchemy import Column, Integer, String, Table, bindparam, select
+from sqlalchemy.testing import config, fixtures
+from sqlalchemy.testing.assertions import eq_
+from sqlalchemy.testing.config import combinations, fixture
 from sqlalchemy.testing.suite.test_dialect import (
     EscapingTest,  # noqa: F401
     ExceptionTest,  # noqa: F401
@@ -22,7 +24,7 @@ class DifficultParametersDisableAutoIncrementTest(fixtures.TestBase):
 
     __backend__ = True
 
-    tough_parameters = testing.combinations(
+    tough_parameters = combinations(
         ("boring",),
         ("per cent",),
         ("per % cent",),
@@ -84,7 +86,7 @@ class DifficultParametersDisableAutoIncrementTest(fixtures.TestBase):
 
         connection.execute(stmt).first()
 
-    @testing.fixture
+    @fixture
     def multirow_fixture(self, metadata, connection):
         mytable = Table(
             "mytable",

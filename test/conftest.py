@@ -44,6 +44,7 @@ registry.register(
 
 def custom_testing_engine(url=None, options=None, *, asyncio=False):
     print(f"Creating DSQL engine for {CLUSTER_ENDPOINT} with driver {DRIVER}")
+    assert CLUSTER_ENDPOINT is not None
 
     engine = create_dsql_engine(
         host=CLUSTER_ENDPOINT,
@@ -57,4 +58,4 @@ def custom_testing_engine(url=None, options=None, *, asyncio=False):
 engines.testing_engine = custom_testing_engine
 
 # Import SQLAlchemy testing components
-from sqlalchemy.testing.plugin.pytestplugin import *  # noqa
+from sqlalchemy.testing.plugin.pytestplugin import *  # noqa # type: ignore[reportWildcardImportFromLibrary]

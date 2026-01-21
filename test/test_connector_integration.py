@@ -12,6 +12,8 @@ from aurora_dsql_sqlalchemy import create_dsql_engine
 
 from .conftest import CLUSTER_ENDPOINT, CLUSTER_ID, CLUSTER_USER, DRIVER, REGION
 
+assert CLUSTER_ENDPOINT is not None
+
 
 class TrackingCredentialsProvider(CredentialProvider):
     METHOD = "custom-tracking"
@@ -20,7 +22,7 @@ class TrackingCredentialsProvider(CredentialProvider):
         super().__init__()
         self.load_called = False
 
-    def load(self):
+    def load(self) -> Credentials:  # type: ignore[override]
         self.load_called = True
         session = get_session()
         creds = session.get_credentials()
