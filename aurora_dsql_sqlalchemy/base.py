@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from functools import lru_cache
 
 from sqlalchemy import bindparam, select, sql
@@ -84,12 +87,11 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
         if create.if_not_exists:
             text += "IF NOT EXISTS "
 
-        text += "%s ON %s " % (
-            self._prepared_index_name(index, include_schema=False),
-            preparer.format_table(index.table),
-        )
+        index_name = self._prepared_index_name(index, include_schema=False)
+        table_name = preparer.format_table(index.table)
+        text += f"{index_name} ON {table_name} "
 
-        text += "(%s)" % (
+        text += "({})".format(
             ", ".join(
                 [
                     self.sql_compiler.process(
@@ -112,8 +114,8 @@ class AuroraDSQLDDLCompiler(PGDDLCompiler):
                 index.table.c[col] if isinstance(col, str) else col
                 for col in includeclause
             ]
-            text += " INCLUDE (%s)" % ", ".join(
-                [preparer.quote(c.name) for c in inclusions]
+            text += " INCLUDE ({})".format(
+                ", ".join([preparer.quote(c.name) for c in inclusions])
             )
 
         nulls_not_distinct = index.dialect_options[self.dialect.name][
@@ -141,7 +143,7 @@ class AuroraDSQLDialect(PGDialect):
 
     _supports_create_index_async = True
 
-    @lru_cache()
+    @lru_cache
     def _columns_query(self, schema, has_filter_names, scope, kind):
         """
         modified from https://github.com/sqlalchemy/sqlalchemy/blob/rel_2_0_41/lib/sqlalchemy/dialects/postgresql/base.py
