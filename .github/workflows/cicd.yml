@@ -49,7 +49,9 @@ jobs:
           uv run ruff check
 
       - name: Download Amazon Root Cert for SSL
-        run: wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
+        run: |
+          sudo wget -O /usr/local/share/ca-certificates/AmazonRootCA1.crt https://www.amazontrust.com/repository/AmazonRootCA1.pem
+          sudo update-ca-certificates
 
       - name: Run integration tests for SQL Alchemy
         env:
