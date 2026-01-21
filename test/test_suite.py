@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from sqlalchemy import Column, Integer, String, Table, bindparam, select, testing
 from sqlalchemy.testing import config, eq_, fixtures
 from sqlalchemy.testing.suite.test_dialect import (

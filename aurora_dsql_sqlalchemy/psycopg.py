@@ -1,3 +1,6 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 from sqlalchemy.dialects.postgresql.psycopg import PGDialect_psycopg
 
 from .base import AuroraDSQLDialect
