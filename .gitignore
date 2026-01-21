@@ -11,6 +11,7 @@ __pycache__/
 *$py.class
 *.egg-info/
 aurora_dsql_sqlalchemy/_version.py
+node_modules/
 
 /.coverage
 /.coverage.*

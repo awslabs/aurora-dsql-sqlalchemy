@@ -27,6 +27,12 @@ uv sync --extra test --extra psycopg
 
 Use the `psycopg2` extra when testing against the `psycopg2` driver.
 
+## Set up pre-commit hooks
+
+```bash
+uv run pre-commit install
+```
+
 ## Configure environment variables
 
 Copy `.env.example` to `.env` and update with your cluster details:
