@@ -48,7 +48,7 @@ jobs:
         with:
           python-version: ${{ matrix.version }}
       - name: Install dependencies
-        run: uv sync --extra test --extra ${{ matrix.driver }}
+        run: uv sync
 
       - name: Download Amazon Root Cert for SSL
         run: wget -O "$SSL_CERT_FILE" https://www.amazontrust.com/repository/AmazonRootCA1.pem
