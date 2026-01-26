@@ -47,7 +47,7 @@ jobs:
         run: uv sync --extra test --extra ${{ matrix.driver }}
 
       - name: Download Amazon Root Cert for SSL
-        run: wget -O $SSL_CERT_FILE https://www.amazontrust.com/repository/AmazonRootCA1.pem
+        run: wget -O "$SSL_CERT_FILE" https://www.amazontrust.com/repository/AmazonRootCA1.pem
 
       - name: Run integration tests for SQL Alchemy
         env:
