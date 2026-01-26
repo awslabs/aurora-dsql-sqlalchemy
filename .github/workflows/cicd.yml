@@ -26,6 +26,8 @@ jobs:
         driver: ["psycopg2", "psycopg"]
     permissions:
       id-token: write # required by aws-actions/configure-aws-credentials
+    env:
+      SSL_CERT_FILE: /tmp/AmazonRootCA1.pem
 
     steps:
       - name: Checkout code
@@ -45,7 +47,7 @@ jobs:
         run: uv sync --extra test --extra ${{ matrix.driver }}
 
       - name: Download Amazon Root Cert for SSL
-        run: wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
+        run: wget -O $SSL_CERT_FILE https://www.amazontrust.com/repository/AmazonRootCA1.pem
 
       - name: Run integration tests for SQL Alchemy
         env:

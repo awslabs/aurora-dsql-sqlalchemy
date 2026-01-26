@@ -16,7 +16,7 @@ def create_dsql_engine(
     driver: str = "psycopg",
     dbname: str = "postgres",
     sslmode: str = "verify-full",
-    sslrootcert: str = "./root.pem",
+    sslrootcert: str = "system",
     application_name: str = "sqlalchemy",
     pool_size: int = 5,
     max_overflow: int = 10,
@@ -36,8 +36,8 @@ def create_dsql_engine(
             Defaults to "psycopg".
         dbname: The database name. Defaults to "postgres".
         sslmode: SSL mode for the connection. Defaults to "verify-full".
-        sslrootcert: Path to the SSL root certificate. Defaults to "./root.pem".
-            Use "system" to use the system CA store.
+        sslrootcert: Path to the SSL root certificate, or "system" to use the
+            system CA store. Defaults to "system".
         application_name: Application name for connection tracking.
             Defaults to "sqlalchemy".
         pool_size: The number of connections to keep in the pool.

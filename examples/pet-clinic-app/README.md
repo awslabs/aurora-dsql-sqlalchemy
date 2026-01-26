@@ -62,23 +62,24 @@ connections should be used where possible to ensure data security during transmi
 
 ### Set up environment for examples
 
-1.  Clone Repository and download root certificate
+1. Clone Repository
 
-```
-# Clone the entire repository
-git clone https://github.com/awslabs/aurora-dsql-sqlalchemy.git
-# Change to the specific directory
-cd aurora-dsql-sqlalchemy/examples/pet-clinic-app
+   ```
+   # Clone the entire repository
+   git clone https://github.com/awslabs/aurora-dsql-sqlalchemy.git
+   # Change to the specific directory
+   cd aurora-dsql-sqlalchemy/examples/pet-clinic-app
+   ```
 
-# Download the Amazon root certificate from the official trust store:
-wget https://www.amazontrust.com/repository/AmazonRootCA1.pem -O root.pem
-```
+2. Configure SSL certificates
 
-2. Install the required packages for running the examples:
+   See [SSL/TLS Configuration](../../docs/SSL_CONFIGURATION.md) for instructions on configuring certificate trust.
 
-```bash
-pip install '.[run,psycopg]'  # use psycopg2 if testing via psycopg2
-```
+3. Install the required packages for running the examples:
+
+   ```bash
+   pip install '.[run,psycopg]'  # use psycopg2 if testing via psycopg2
+   ```
 
 ### Run the code
 
