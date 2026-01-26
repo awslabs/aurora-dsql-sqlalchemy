@@ -7,16 +7,20 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-  # Give us a button to allow running the workflow on demand for testing.
   workflow_dispatch:
-    inputs:
-      tags:
-        description: "Manual Workflow Run"
-        required: false
-        type: string
 
 jobs:
+  create-cluster:
+    uses: ./.github/workflows/dsql-cluster-create.yml
+    with:
+      workflow_name: sqlalchemy-dialect
+    secrets:
+      AWS_IAM_ROLE: ${{ secrets.PYTHON_IAM_ROLE }}
+    permissions:
+      id-token: write # required by aws-actions/configure-aws-credentials
+
   dialect-test:
+    needs: create-cluster
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1 # limit to 1 since we have 1 dsql cluster
@@ -37,7 +41,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ secrets.PYTHON_IAM_ROLE }}
-          aws-region: us-east-1
+          aws-region: ${{ needs.create-cluster.outputs.region }}
 
       - name: Setup uv
         uses: astral-sh/setup-uv@v7
@@ -51,7 +55,7 @@ jobs:
 
       - name: Run integration tests for SQL Alchemy
         env:
-          CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
+          CLUSTER_ENDPOINT: ${{ needs.create-cluster.outputs.cluster-endpoint }}
           CLUSTER_USER: admin
           DRIVER: ${{ matrix.driver }}
         run: |
@@ -60,9 +64,21 @@ jobs:
 
       - name: Run integration tests for SQL Alchemy Pet Clinic Example
         env:
-          CLUSTER_ENDPOINT: ${{ secrets.PYTHON_SQLALCHEMY_DIALECT_CLUSTER_ENDPOINT }}
+          CLUSTER_ENDPOINT: ${{ needs.create-cluster.outputs.cluster-endpoint }}
           CLUSTER_USER: admin
           DRIVER: ${{ matrix.driver }}
         run: |
           echo "$GITHUB_WORKSPACE" >> "$GITHUB_PATH"
           uv run pytest -v examples/pet-clinic-app/test/
+
+  delete-cluster:
+    if: always() && needs.create-cluster.result == 'success'
+    needs: [create-cluster, dialect-test]
+    uses: ./.github/workflows/dsql-cluster-delete.yml
+    with:
+      cluster-id: ${{ needs.create-cluster.outputs.cluster-id }}
+      region: ${{ needs.create-cluster.outputs.region }}
+    secrets:
+      AWS_IAM_ROLE: ${{ secrets.PYTHON_IAM_ROLE }}
+    permissions:
+      id-token: write # required by aws-actions/configure-aws-credentials
