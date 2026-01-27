@@ -1,7 +1,17 @@
+> **⚠️ This repository has been deprecated**
+>
+> This project has moved to the [Aurora DSQL ORMs monorepo](https://github.com/awslabs/aurora-dsql-orms/tree/main/python/sqlalchemy).
+>
+> **For users:** The PyPI package `aurora-dsql-sqlalchemy` continues to work - just `pip install aurora-dsql-sqlalchemy` as usual.
+>
+> **For contributors:** Please open issues and pull requests in the [new repository](https://github.com/awslabs/aurora-dsql-orms).
+
+---
+
 # Amazon Aurora DSQL dialect for SQLAlchemy
 
-[![GitHub](https://img.shields.io/badge/github-awslabs/aurora--dsql--sqlalchemy-blue?logo=github)](https://github.com/awslabs/aurora-dsql-sqlalchemy)
-[![License](https://img.shields.io/badge/license-Apache--2.0-brightgreen)](https://github.com/awslabs/aurora-dsql-sqlalchemy/blob/main/LICENSE)
+[![GitHub](https://img.shields.io/badge/github-awslabs/aurora--dsql--orms-blue?logo=github)](https://github.com/awslabs/aurora-dsql-orms/tree/main/python/sqlalchemy)
+[![License](https://img.shields.io/badge/license-Apache--2.0-brightgreen)](https://github.com/awslabs/aurora-dsql-orms/blob/main/LICENSE)
 [![PyPI - Version](https://img.shields.io/pypi/v/aurora-dsql-sqlalchemy)](https://pypi.org/project/aurora-dsql-sqlalchemy)
 [![Discord chat](https://img.shields.io/discord/1435027294837276802.svg?logo=discord)](https://discord.com/invite/nEF6ksFWru)
 
@@ -13,8 +23,8 @@ Aurora DSQL's distributed architecture and high availability.
 
 ## Sample Application
 
-There is an included sample application in [examples/pet-clinic-app](https://github.com/awslabs/aurora-dsql-sqlalchemy/tree/main/examples/pet-clinic-app) that shows how to use Aurora DSQL
-with SQLAlchemy. To run the included example please refer to the [sample README](https://github.com/awslabs/aurora-dsql-sqlalchemy/tree/main/examples/pet-clinic-app#readme).
+There is an included sample application in [examples/pet-clinic-app](https://github.com/awslabs/aurora-dsql-orms/tree/main/python/sqlalchemy/examples/pet-clinic-app) that shows how to use Aurora DSQL
+with SQLAlchemy. To run the included example please refer to the [sample README](https://github.com/awslabs/aurora-dsql-orms/tree/main/python/sqlalchemy/examples/pet-clinic-app#readme).
 
 ## Prerequisites
 
@@ -79,9 +89,9 @@ Aurora DSQL requires TLS for all connections. Plaintext connections are not supp
 
 `create_dsql_engine` defaults to:
 - `sslmode="verify-full"` - verifies the server certificate and hostname
-- `sslrootcert="system"` - uses the default certificate authority (CA) trust defined by libpq’s TLS backend
+- `sslrootcert="system"` - uses the default certificate authority (CA) trust defined by libpq's TLS backend
 
-See [SSL Configuration](docs/SSL_CONFIGURATION.md) for detailed setup instructions.
+See [SSL Configuration](https://github.com/awslabs/aurora-dsql-orms/blob/main/python/sqlalchemy/docs/SSL_CONFIGURATION.md) for detailed setup instructions.
 
 ## Best Practices
 
@@ -146,11 +156,11 @@ Column(
 
 ## Developer instructions
 
-Instructions on how to build and test the dialect are available in the [Developer Instructions](https://github.com/awslabs/aurora-dsql-sqlalchemy/tree/main/aurora_dsql_sqlalchemy#readme).
+Instructions on how to build and test the dialect are available in the [Developer Instructions](https://github.com/awslabs/aurora-dsql-orms/tree/main/python/sqlalchemy/aurora_dsql_sqlalchemy#readme).
 
 ## Security
 
-See [CONTRIBUTING](https://github.com/awslabs/aurora-dsql-sqlalchemy/blob/main/CONTRIBUTING.md#security-issue-notifications) for more information.
+See [CONTRIBUTING](https://github.com/awslabs/aurora-dsql-orms/blob/main/CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## License
 
